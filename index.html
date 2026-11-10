@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f1e9">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Entrelinhas">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./icons/icon-192.svg">
+  <meta name="description" content="Entrelinhas: uma coleção de marcadores de página criados por estudantes e pela comunidade da biblioteca.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Entrelinhas — Marcadores de página">
+  <meta property="og:description" content="Marcadores criados na biblioteca por estudantes e pela comunidade: desenhos, palavras, memórias, afetos e pequenas histórias.">
+  <title>Entrelinhas — Marcadores de página da biblioteca</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  <link rel="stylesheet" href="./style.css">
+  <script src="./catalogo.js" defer></script>
+  <script src="./app.js" defer></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js"));
+    }
+  </script>
+</head>
+<body>
+  <div class="site-shell">
+    <header class="site-header">
+      <a class="brand" href="#inicio" aria-label="Entrelinhas — início">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span>entre<span class="brand-accent">linhas</span><small>marcadores de página</small></span>
+      </a>
+      <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="main-nav">
+        <span></span><span></span>
+      </button>
+      <nav class="main-nav" id="main-nav" aria-label="Navegação principal">
+        <a href="#colecao">Coleção</a>
+        <a href="#ideia">A história</a>
+        <a href="#participar">Participe</a>
+        <a href="#impressao">Imprimir</a>
+        <a class="nav-cta" href="#colecao">Ver os marcadores <span aria-hidden="true">↗</span></a>
+      </nav>
+    </header>
+    <main>
+      <section class="hero" id="inicio">
+        <div class="hero-copy">
+          <div class="eyebrow"><span class="eyebrow-dot"></span> MARCADORES CRIADOS NA BIBLIOTECA</div>
+          <h1>Um marcador<br>pode guardar <em>muito mais.</em></h1>
+          <p class="hero-description">Eles começaram como uma ideia do projeto Nós da Arte. Hoje, são desenhos, palavras, presentes, lembranças e pequenos registros de quem passa pela biblioteca.</p>
+          <div class="hero-actions">
+            <a class="button button-dark" href="#colecao">Conheça os marcadores <span aria-hidden="true">↘</span></a>
+            <a class="text-link" href="#ideia">Como tudo começou <span aria-hidden="true">↗</span></a>
+          </div>
+          <div class="hero-footnote"><span class="footnote-line"></span> FEITOS POR QUEM PASSA POR AQUI</div>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="visual-halo"></div>
+          <div class="visual-spark spark-one">✳</div>
+          <div class="visual-spark spark-two">✦</div>
+          <div class="visual-note note-one">volte<br>sempre</div>
+          <div class="visual-note note-two">FEITO<br>AQUI</div>
+          <div class="bookmark bookmark-blue"><span class="bookmark-side">NÓS DA ARTE • CRIAÇÃO • BIBLIOTECA</span><span class="bookmark-number">01</span><span class="bookmark-word">FAÇA<br><i>deixe.</i></span><span class="bookmark-stamp">↗</span></div>
+          <div class="bookmark bookmark-coral"><span class="coral-top">UM LUGAR</span><span class="coral-word">faça<br>deixe<br><b>algo.</b></span><span class="coral-star">✳</span></div>
+          <div class="bookmark bookmark-paper"><span class="paper-label">ENTRELINHAS / Nº 03</span><span class="paper-sun">✳</span><span class="paper-word">a vida<br>cabe em<br><i>páginas.</i></span><span class="paper-bottom">DEIXE UMA MARCA</span></div>
+          <div class="visual-caption"><span>01 — 03</span><span>MARCADORES FEITOS AQUI</span></div>
+        </div>
+      </section>
+      <div class="ticker" aria-label="Leitura, memória, imaginação e descoberta">
+        <div class="ticker-track"><span>CRIAÇÃO</span><b>✳</b><span>MEMÓRIA</span><b>✳</b><span>EXPRESSÃO</span><b>✳</b><span>ESCUTA</span><b>✳</b><span>CRIAÇÃO</span><b>✳</b><span>MEMÓRIA</span><b>✳</b><span>EXPRESSÃO</span><b>✳</b><span>ESCUTA</span><b>✳</b></div>
+      </div>
+      <section class="intro section-wrap" id="ideia">
+        <div class="section-kicker"><span>01</span> A HISTÓRIA</div>
+        <div class="intro-content">
+          <h2>Às vezes, um marcador começa com um desenho. E termina contando uma <em>história.</em></h2>
+          <div class="intro-aside">
+            <p>O projeto começou com alunos do <strong><a href="https://www.instagram.com/nosdaarteifmg/" target="_blank" rel="noopener noreferrer">Nós da Arte</a></strong>, coordenado pelo professor Max. Eles criaram marcadores personalizados para serem distribuídos na biblioteca. Outros estudantes gostaram da ideia e quiseram fazer os seus.</p>
+            <p>No começo, eles acabavam rápido. Criamos então uma regra: para levar um marcador, era preciso fazer outro e deixar no lugar. A regra já não existe, mas a troca continua de muitos jeitos — alguns fazem e levam, outros fazem e deixam, outros apenas pegam. E, de algum modo, sempre aparece um novo marcador.</p>
+            <a class="circle-link" href="#colecao" aria-label="Ir para a coleção"><span>↓</span></a>
+          </div>
+        </div>
+      </section>
+      <section class="collection-section" id="colecao">
+        <div class="section-wrap">
+          <div class="collection-heading">
+            <div><div class="section-kicker"><span>02</span> OS MARCADORES</div><h2>Um marcador.<br><em>Muitas histórias.</em></h2></div>
+            <div class="collection-side"><p>Estamos catalogando, escaneando e divulgando os marcadores que passaram pela biblioteca. Alguns também ganham um lugar especial no balcão.</p><span class="collection-count" id="item-count">CARREGANDO A COLEÇÃO</span></div>
+          </div>
+          <div class="gallery-empty" id="gallery-empty">
+            <div class="empty-art" aria-hidden="true"><div class="empty-orbit"></div><div class="empty-bookmark empty-bookmark-a"><span>LEIA</span><b>✳</b></div><div class="empty-bookmark empty-bookmark-b"><span>MAIS</span><b>↗</b></div><div class="empty-bookmark empty-bookmark-c"><span>UMA<br>PÁGINA<br>DE CADA<br>VEZ</span></div></div>
+            <div class="empty-copy"><span class="empty-label">COLEÇÃO TEMPORARIAMENTE INDISPONÍVEL</span><h3>As imagens não<br><em>carregaram desta vez.</em></h3><p>Os marcadores continuam no acervo. Atualize a página para tentar carregar a coleção novamente.</p></div>
+          </div>
+          <div class="gallery-tools" role="search">
+            <label class="gallery-search">
+              <span class="search-symbol" aria-hidden="true">⌕</span>
+              <input id="gallery-search" type="search" placeholder="Buscar por marcador ou autoria..." autocomplete="off" aria-label="Buscar por marcador ou autoria">
+              <button id="gallery-search-clear" type="button" aria-label="Limpar busca" hidden>×</button>
+            </label>
+            <span class="gallery-results" id="gallery-results" aria-live="polite"></span>
+          </div>
+          <div class="gallery-grid" id="gallery-grid" aria-live="polite"></div>
+          <div class="gallery-more-wrap"><button class="button button-dark gallery-more" id="gallery-more" type="button" hidden>Carregar mais <span aria-hidden="true">↓</span></button></div>
+          <noscript><p class="noscript-message">Ative o JavaScript do navegador para visualizar a coleção.</p></noscript>
+        </div>
+      </section>
+      <section class="print-section section-wrap" id="impressao">
+        <div class="section-kicker"><span>03</span> IMPRESSÃO</div>
+        <div class="print-heading">
+          <div>
+            <h2>Monte sua folha<br>de <em>marcadores.</em></h2>
+          </div>
+          <div class="print-intro">
+            <p>Selecione os marcadores que deseja imprimir e o site monta automaticamente uma folha A4, aproveitando o espaço disponível.</p>
+            <p>Quando houver frente e verso, os dois lados ocupam exatamente a mesma posição. O verso é preparado para impressão frente e verso pela <strong>margem longa</strong>.</p>
+          </div>
+        </div>
+
+        <div class="print-panel">
+          <div class="print-controls">
+            <label><span>Orientação</span><select id="print-orientation"><option value="auto">Automática — aproveitar melhor o A4</option><option value="portrait">Retrato</option><option value="landscape">Paisagem</option></select></label>
+            <label><span>Largura do marcador</span><div class="unit-input"><input id="print-width" type="number" min="20" max="90" step="1" value="50"><b>mm</b></div></label>
+            <label><span>Altura do marcador</span><div class="unit-input"><input id="print-height" type="number" min="60" max="250" step="1" value="150"><b>mm</b></div></label>
+            <label><span>Espaço entre marcadores</span><div class="unit-input"><input id="print-gap" type="number" min="0" max="20" step="1" value="5"><b>mm</b></div></label>
+            <label><span>Margem da folha</span><div class="unit-input"><input id="print-margin" type="number" min="5" max="25" step="1" value="10"><b>mm</b></div></label>
+            <label><span>Frente e verso</span><select id="print-duplex"><option value="long">Virar na margem longa — recomendado</option><option value="short">Virar na margem curta</option></select></label>
+          </div>
+          <div class="print-status">
+            <div><strong id="print-selection-count">Nenhum marcador selecionado</strong><span id="print-capacity">Selecione os marcadores na coleção.</span></div>
+            <div class="print-actions"><button class="text-button" id="print-clear" type="button">Limpar seleção</button><button class="button button-dark" id="print-button" type="button" disabled>Preparar impressão <span aria-hidden="true">↗</span></button></div>
+          </div>
+          <div class="print-help">
+            <strong>Para frente e verso</strong>
+            <span>Use escala de <b>100% / tamanho real</b> na janela de impressão e desative “ajustar à página”. Para impressoras duplex, escolha a mesma margem indicada aqui. Em impressoras que exigem virar a folha manualmente, siga a orientação mostrada pelo driver.</span>
+          </div>
+        </div>
+
+        <div class="print-preview" id="print-preview" hidden>
+          <div class="print-preview-head"><span>PRÉ-VISUALIZAÇÃO</span><span id="print-preview-note"></span></div>
+          <div id="print-sheets"></div>
+        </div>
+      </section>
+      <section class="interaction-section section-wrap" id="participar">
+        <div class="section-kicker"><span>04</span> PARTICIPE</div>
+        <div class="interaction-heading">
+          <div><h2>Seu marcador pode<br>fazer parte da <em>coleção.</em></h2></div>
+          <div class="interaction-intro">
+            <p>Escolha como quer participar: solicite uma alteração ou retirada, apresente um novo marcador ou combine a entrega do original à biblioteca.</p>
+            <p>A publicação da imagem e a identificação da autoria serão avaliadas separadamente, respeitando a sua autorização.</p>
+          </div>
+        </div>
+
+        <div class="interaction-form contact-options" id="interaction-options">
+          <div class="participation-choices">
+            <label class="choice-card">
+              <input type="radio" name="caminho" value="marcador-no-site">
+              <span class="choice-number">01</span>
+              <strong>Meu marcador já está na coleção</strong>
+              <small>Corrigir autoria, alterar permissões ou solicitar a retirada.</small>
+            </label>
+            <label class="choice-card">
+              <input type="radio" name="caminho" value="novo-marcador">
+              <span class="choice-number">02</span>
+              <strong>Fiz um marcador que ainda não está na coleção</strong>
+              <small>Envie uma fotografia para que ele possa ser incluído no site.</small>
+            </label>
+            <label class="choice-card">
+              <input type="radio" name="caminho" value="expor-biblioteca">
+              <span class="choice-number">03</span>
+              <strong>Quero deixar meu marcador na biblioteca</strong>
+              <small>Combine a entrega pessoal do original para exposição.</small>
+            </label>
+          </div>
+          <div class="contact-guidance" id="contact-guidance" hidden aria-live="polite">
+            <div>
+              <span class="contact-label">PRÓXIMO PASSO</span>
+              <h3 id="contact-guidance-title">Fale com a biblioteca</h3>
+              <p id="contact-guidance-text"></p>
+            </div>
+            <a class="button button-dark" id="email-contact-link" href="mailto:biblioteca.sabara@ifmg.edu.br">Abrir meu e-mail <span aria-hidden="true">↗</span></a>
+          </div>
+          <p class="contact-email-note">Ao escolher uma opção, seu aplicativo de e-mail será aberto com uma mensagem inicial. Revise e complete os dados antes de enviar. Para apresentar um novo marcador, lembre-se de anexar a fotografia.</p>
+        </div> </form>
+
+        <div class="materials-contact">
+          <div><div class="section-kicker"><span>05</span> AJUDE A CRIAR</div><h3>Também aceitamos<br><em>materiais.</em></h3><p>Papel mais grosso, tinta, pincel, lápis, giz e outros materiais que possam ganhar uma nova vida nas mãos de quem cria.</p></div>
+          <div class="contact-card"><span class="contact-label">FALE COM A BIBLIOTECA</span><strong>Biblioteca do IFMG Campus Sabará</strong><a href="mailto:biblioteca.sabara@ifmg.edu.br">biblioteca.sabara@ifmg.edu.br</a><a href="tel:+553121029374">(31) 2102-9374</a><span>segunda a sexta · 9h às 21h</span></div>
+        </div>
+      </section>
+
+      <section class="closing section-wrap"><div class="closing-copy"><div class="section-kicker"><span>06</span> PARA ALÉM DO MARCADOR</div><h2>Um pequeno espaço<br>para criar, deixar<br>e <em>marcar presença.</em></h2></div><a class="closing-stamp" href="#inicio" aria-label="Voltar ao início"><span>VOLTAR AO<br>COMEÇO</span><b>↑</b></a></section>
+    </main>
+    <footer class="site-footer"><a class="footer-brand" href="#inicio">entrelinhas<span>®</span></a><span>UM LUGAR PARA CRIAR E DEIXAR MARCAS.</span><span>© <span id="current-year">2026</span></span></footer>
+  </div>
+  <dialog class="image-dialog" id="image-dialog" aria-label="Detalhes do marcador"><button class="dialog-close" id="dialog-close" type="button" aria-label="Fechar">×</button><img id="dialog-image" src="" alt=""><div class="dialog-caption"><span id="dialog-title"></span><span>ENTRELINHAS</span></div></dialog>
+</body>
+</html>
