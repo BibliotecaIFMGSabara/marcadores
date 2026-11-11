@@ -49,7 +49,7 @@ window.MARCADORES = [
   { titulo: "Gato Na Agua 2", imagem: "imagens/gato-na-agua-2.jpg" },
   { titulo: "Gato Puxado 1", imagem: "imagens/gato-puxado-1.jpg" },
   { titulo: "Gato Puxado 2", imagem: "imagens/gato-puxado-2.jpg" },
-  { titulo: "Hellboy", imagem: "imagens/Hellboy-Nayana-frente.jpg", verso: "imagens/Hellboy-Nayana-verso.jpg", autoria: "Nayana Cristine" },
+  { titulo: "Hellboy", imagem: "imagens/Hellboy.jpg", verso: "imagens/Hellboy-verso.jpg", autoria: "Nayana Cristine" },
   { titulo: "I Have No Mouth", imagem: "imagens/i-have-no-mouth.jpg", verso: "imagens/i-have-no-mouth-verso.jpg", autoria: "Nayana Cristine" },
   { titulo: "I Heard", imagem: "imagens/i-heard.jpg", verso: "imagens/i-heard-verso.jpg" },
   { titulo: "Jardim", imagem: "imagens/jardim.jpg" },
