@@ -49,7 +49,7 @@ window.MARCADORES = [
   { titulo: "Gato Na Agua 2", imagem: "imagens/gato-na-agua-2.jpg" },
   { titulo: "Gato Puxado 1", imagem: "imagens/gato-puxado-1.jpg" },
   { titulo: "Gato Puxado 2", imagem: "imagens/gato-puxado-2.jpg" },
-  { titulo: "Hellboy Nayana", imagem: "imagens/Hellboy-Nayana-frente.jpg", autoria: "Nayana Cristine" },
+  { titulo: "Hellboy", imagem: "imagens/Hellboy-Nayana-frente.jpg", verso: "imagens/Hellboy-Nayana-verso.jpg", autoria: "Nayana Cristine" },
   { titulo: "I Have No Mouth", imagem: "imagens/i-have-no-mouth.jpg", verso: "imagens/i-have-no-mouth-verso.jpg", autoria: "Nayana Cristine" },
   { titulo: "I Heard", imagem: "imagens/i-heard.jpg", verso: "imagens/i-heard-verso.jpg" },
   { titulo: "Jardim", imagem: "imagens/jardim.jpg" },
@@ -63,7 +63,7 @@ window.MARCADORES = [
   { titulo: "Matemática", imagem: "imagens/matematica.jpg" },
   { titulo: "Melancia", imagem: "imagens/melancia.jpg" },
   { titulo: "Menina Luisa", imagem: "imagens/menina-luisa.jpg", verso: "imagens/menina-luisa-verso.jpg" },
-  { titulo: "Menino e o Mundo", imagem: "imagens/menino-e-o-mundo.jpg", verso: "imagens/menino-e-o-mundo-verso.jpg" },
+  { titulo: "Menino e o Mundo", imagem: "imagens/menino-e-o-mundo.jpg", verso: "imagens/menino-e-o-mundo-verso.jpg", autoria: "Vitória Pereira" },
   { titulo: "Meu Tio", imagem: "imagens/meu-tio.jpg" },
   { titulo: "Moranguinho", imagem: "imagens/moranguinho.jpg" },
   { titulo: "My Little Pony", imagem: "imagens/my-little-poney.jpg" },
@@ -87,7 +87,6 @@ window.MARCADORES = [
   { titulo: "Tigrinho", imagem: "imagens/tigrinho.jpg" },
   { titulo: "Touca", imagem: "imagens/touca.jpg" },
   { titulo: "Triangulos", imagem: "imagens/triangulos.jpg" },
-  { titulo: "Um Dia De Cada Vez", imagem: "imagens/um-dia-de-cada-vez.jpg", verso: "imagens/um-dia-de-cada-vez-verso.jpg" },
-  { titulo: "Hellboy Nayana", imagem: "imagens/Hellboy-Nayana-verso.jpg", autoria: "Nayana Cristine" },
+  { titulo: "Um Dia De Cada Vez", imagem: "imagens/um-dia-de-cada-vez.jpg", verso: "imagens/um-dia-de-cada-vez-verso.jpg", autoria: "Elen" },
   { titulo: "Ensolarado", imagem: "imagens/ensolarado-verso.jpg" }
 ];
