@@ -1,0 +1,319 @@
+#!/usr/bin/env python3
+"""Atualiza catalogo.js a partir dos nomes das imagens da coleção.
+
+Convenção recomendada:
+  nome-do-marcador.jpg
+  nome-do-marcador-verso.jpg
+
+O script só acrescenta registros ausentes ou associa um verso ainda não
+cadastrado. Nunca remove entradas nem substitui metadados manuais.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+
+IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
+OBJECT_RE = re.compile(r"\{[^{}]*\}", re.DOTALL)
+IMAGE_FIELD_RE = re.compile(r"\bimagem\s*:\s*([\"'])(.*?)\1")
+VERSO_FIELD_RE = re.compile(r"\bverso\s*:\s*([\"'])(.*?)\1")
+
+TITLE_REPLACEMENTS = {
+    "agua": "água",
+    "coracao": "coração",
+    "coracoes": "corações",
+    "criancas": "crianças",
+    "degrade": "degradê",
+    "eletronica": "eletrônica",
+    "matematica": "matemática",
+    "nao": "não",
+    "voce": "você",
+    "triangulos": "triângulos",
+    "ce": "cê",
+    "ta": "tá",
+}
+LOWERCASE_WORDS = {
+    "a", "as", "ao", "aos", "à", "às", "de", "do", "dos", "da", "das",
+    "e", "em", "no", "nos", "na", "nas", "o", "os", "para", "por", "que",
+    "um", "uma", "uns", "umas",
+}
+
+
+def normalize_path(value: str) -> str:
+    return Path(value.replace("\\", "/")).as_posix().casefold()
+
+
+def humanize_title(filename: str) -> str:
+    """Converte um nome de arquivo em título legível, sem separar códigos como 6x1."""
+    stem = Path(filename).stem
+    stem = re.sub(r"-(verso|frente)$", "", stem, flags=re.IGNORECASE)
+    stem = re.sub(
+        r"([a-záàâãéêíóôõúç])([A-ZÁÀÂÃÉÊÍÓÔÕÚÇ])",
+        r"\1 \2",
+        stem,
+    )
+    stem = re.sub(r"[_-]+", " ", stem)
+    words = re.sub(r"\s+", " ", stem).strip().split()
+
+    result = []
+    for index, original in enumerate(words):
+        word = original.lower()
+        word = TITLE_REPLACEMENTS.get(word, word)
+
+        if index > 0 and word in LOWERCASE_WORDS:
+            result.append(word)
+        elif re.fullmatch(r"\d+(?:x\d+)?", word):
+            result.append(word)
+        elif word:
+            result.append(word[0].upper() + word[1:])
+        else:
+            result.append(word)
+
+    return " ".join(result)
+
+
+def parse_catalog_entries(catalog: str) -> tuple[int, list[dict]]:
+    array_match = re.search(r"window\.MARCADORES\s*=\s*\[", catalog)
+    if not array_match:
+        raise ValueError("Não foi encontrado o início de window.MARCADORES no catalogo.js.")
+
+    array_end = catalog.find("];", array_match.end())
+    if array_end < 0:
+        raise ValueError("Não foi encontrado o fechamento ]; do catálogo.")
+
+    entries = []
+    body = catalog[array_match.end():array_end]
+    for match in OBJECT_RE.finditer(body):
+        image_match = IMAGE_FIELD_RE.search(match.group(0))
+        if not image_match:
+            continue
+
+        verso_match = VERSO_FIELD_RE.search(match.group(0))
+        entries.append({
+            "start": array_match.end() + match.start(),
+            "end": array_match.end() + match.end(),
+            "object": match.group(0),
+            "imagem": image_match.group(2),
+            "verso": verso_match.group(2) if verso_match else "",
+        })
+
+    return array_end, entries
+
+
+def build_image_index(image_paths: list[str]) -> dict[str, str]:
+    index: dict[str, str] = {}
+    for value in image_paths:
+        path = Path(value.replace("\\", "/"))
+        if path.suffix.lower() not in IMAGE_EXTENSIONS:
+            continue
+        if path.parent.as_posix() != "imagens":
+            continue
+        index.setdefault(path.name.casefold(), path.as_posix())
+    return index
+
+
+def find_image_by_stem(stem: str, by_name: dict[str, str]) -> str | None:
+    for extension in (".jpg", ".jpeg", ".png", ".webp"):
+        found = by_name.get((stem + extension).casefold())
+        if found:
+            return found
+    return None
+
+
+def front_for_changed_image(path: str, by_name: dict[str, str]) -> str | None:
+    filename = Path(path).name
+    stem = Path(filename).stem
+
+    if re.search(r"-verso$", stem, flags=re.IGNORECASE):
+        base = re.sub(r"-verso$", "", stem, flags=re.IGNORECASE)
+        # O app associa nome-verso apenas a uma frente chamada nome.ext.
+        return find_image_by_stem(base, by_name)
+
+    if re.search(r"-frente$", stem, flags=re.IGNORECASE):
+        base = re.sub(r"-frente$", "", stem, flags=re.IGNORECASE)
+        plain_front = find_image_by_stem(base, by_name)
+        return plain_front or by_name.get(filename.casefold())
+
+    return by_name.get(filename.casefold())
+
+
+def find_verso(front_path: str, by_name: dict[str, str]) -> str | None:
+    stem = Path(front_path).stem
+    return find_image_by_stem(stem + "-verso", by_name)
+
+
+def append_verso_field(entry_object: str, verso_path: str) -> str:
+    closing = entry_object.rfind("}")
+    if closing < 0:
+        raise ValueError("Registro inválido no catálogo: falta }.")
+
+    prefix = entry_object[:closing].rstrip()
+    separator = "" if prefix.endswith(("{", ",")) else ","
+    return prefix + separator + " verso: " + json.dumps(verso_path, ensure_ascii=False) + entry_object[closing:]
+
+
+def atualizar_catalogo(
+    catalog: str,
+    image_paths: list[str],
+    changed_paths: list[str] | None = None,
+) -> tuple[str, dict[str, int]]:
+    """Retorna o catálogo atualizado e um resumo das alterações."""
+    _, entries = parse_catalog_entries(catalog)
+    by_name = build_image_index(image_paths)
+    catalog_by_image = {
+        normalize_path(entry["imagem"]): entry
+        for entry in entries
+    }
+
+    if changed_paths is None:
+        candidates_to_check = list(by_name.values())
+    else:
+        candidates_to_check = [
+            path for path in changed_paths
+            if Path(path).suffix.lower() in IMAGE_EXTENSIONS
+            and Path(path).parent.as_posix() == "imagens"
+        ]
+
+    fronts: set[str] = set()
+    ignored_versos = 0
+    for changed in candidates_to_check:
+        front = front_for_changed_image(changed, by_name)
+        if front:
+            fronts.add(front)
+        elif re.search(r"-verso\.(jpe?g|png|webp)$", changed, flags=re.IGNORECASE):
+            ignored_versos += 1
+
+    replacements = []
+    new_records = []
+    linked_versos = 0
+
+    for front in sorted(fronts, key=str.casefold):
+        verso = find_verso(front, by_name)
+        key = normalize_path(front)
+        existing = catalog_by_image.get(key)
+
+        if existing:
+            # Não sobrescreve um verso já informado manualmente.
+            if verso and not existing["verso"]:
+                updated_object = append_verso_field(existing["object"], verso)
+                replacements.append((existing["start"], existing["end"], updated_object))
+                linked_versos += 1
+            continue
+
+        fields = [
+            "titulo: " + json.dumps(humanize_title(Path(front).name), ensure_ascii=False),
+            "imagem: " + json.dumps(front, ensure_ascii=False),
+        ]
+        if verso:
+            fields.append("verso: " + json.dumps(verso, ensure_ascii=False))
+
+        new_records.append("{ " + ", ".join(fields) + " }")
+        catalog_by_image[key] = {"imagem": front, "verso": verso or ""}
+    
+    updated = catalog
+    for start, end, replacement in sorted(replacements, reverse=True):
+        updated = updated[:start] + replacement + updated[end:]
+
+    if new_records:
+        array_end, _ = parse_catalog_entries(updated)
+        prefix = updated[:array_end].rstrip()
+        array_start = re.search(r"window\.MARCADORES\s*=\s*\[", updated)
+        assert array_start is not None
+        last_character = prefix[-1:] if prefix else ""
+        if last_character not in ("[", ","):
+            prefix += ","
+        insertion = "\n  " + ",\n  ".join(new_records) + "\n"
+        updated = prefix + insertion + updated[array_end:]
+
+    return updated, {
+        "adicionados": len(new_records),
+        "versos_associados": linked_versos,
+        "versos_sem_frente": ignored_versos,
+    }
+
+
+def changed_images_from_git(before: str, after: str) -> list[str] | None:
+    if not before or set(before) == {"0"}:
+        return None
+
+    result = subprocess.run(
+        [
+            "git", "diff", "--name-only", "-z", "--diff-filter=AMR",
+            before, after, "--", "imagens/",
+        ],
+        check=True,
+        capture_output=True,
+    )
+    return [
+        item.decode("utf-8")
+        for item in result.stdout.split(b"\0")
+        if item
+    ]
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Atualiza automaticamente o catálogo de marcadores.")
+    parser.add_argument(
+        "--git-diff",
+        nargs=2,
+        metavar=("COMMIT_ANTERIOR", "COMMIT_ATUAL"),
+        help="Processa somente imagens adicionadas/alteradas entre dois commits.",
+    )
+    parser.add_argument(
+        "paths",
+        nargs="*",
+        help="Caminhos de imagens a processar; sem caminhos, verifica toda a pasta imagens/.",
+    )
+    args = parser.parse_args()
+
+    root = Path(__file__).resolve().parents[1]
+    catalog_path = root / "catalogo.js"
+    image_dir = root / "imagens"
+
+    if not catalog_path.is_file() or not image_dir.is_dir():
+        print("Erro: catalogo.js ou pasta imagens/ não encontrados.", file=sys.stderr)
+        return 1
+
+    image_paths = [
+        path.relative_to(root).as_posix()
+        for path in image_dir.iterdir()
+        if path.is_file() and path.suffix.lower() in IMAGE_EXTENSIONS
+    ]
+
+    if args.git_diff:
+        changed_paths = changed_images_from_git(*args.git_diff)
+    elif args.paths:
+        changed_paths = args.paths
+    else:
+        changed_paths = None
+
+    original = catalog_path.read_text(encoding="utf-8")
+    updated, summary = atualizar_catalogo(original, image_paths, changed_paths)
+
+    if updated != original:
+        catalog_path.write_text(updated, encoding="utf-8", newline="\n")
+        print(
+            "Catálogo atualizado: "
+            f"{summary['adicionados']} novo(s) marcador(es); "
+            f"{summary['versos_associados']} verso(s) associado(s)."
+        )
+    else:
+        print("Catálogo já estava atualizado; nenhuma alteração necessária.")
+
+    if summary["versos_sem_frente"]:
+        print(
+            f"Aviso: {summary['versos_sem_frente']} arquivo(s) de verso sem frente correspondente "
+            "foram ignorados."
+        )
+
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
