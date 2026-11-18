@@ -32,6 +32,16 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Validar token de publicação
+        env:
+          PUBLISH_TOKEN: ${{ secrets.MARCADORES_PUBLISH_TOKEN }}
+        run: |
+          if [ -z "$PUBLISH_TOKEN" ]; then
+            echo "::error::O segredo MARCADORES_PUBLISH_TOKEN não está disponível para este repositório."
+            exit 1
+          fi
+          echo "Token de publicação encontrado."
+
       - name: Testar atualização do catálogo
         run: python -m unittest discover -s tests -v
 
@@ -49,11 +59,6 @@ jobs:
           if git diff --quiet -- catalogo.js; then
             echo "Nenhuma alteração no catálogo."
             exit 0
-          fi
-
-          if [ -z "$PUBLISH_TOKEN" ]; then
-            echo "::error::Configure o segredo MARCADORES_PUBLISH_TOKEN nas configurações do repositório para que o GitHub Pages publique as alterações."
-            exit 1
           fi
 
           git config user.name "github-actions[bot]"
