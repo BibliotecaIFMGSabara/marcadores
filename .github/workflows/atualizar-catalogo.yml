@@ -45,12 +45,11 @@ jobs:
       - name: Testar atualização do catálogo
         run: python -m unittest discover -s tests -v
 
-      - name: Atualizar catálogo com as imagens deste envio
-        env:
-          COMMIT_ANTERIOR: ${{ github.event.before }}
-          COMMIT_ATUAL: ${{ github.sha }}
+      - name: Atualizar catálogo a partir de todas as imagens
         run: |
-          python scripts/atualizar_catalogo.py --git-diff "$COMMIT_ANTERIOR" "$COMMIT_ATUAL"
+          # A varredura completa também atualiza metadados de arquivos já existentes
+          # quando a lógica do workflow é aprimorada.
+          python scripts/atualizar_catalogo.py
 
       - name: Salvar catálogo e acionar publicação do site
         env:
