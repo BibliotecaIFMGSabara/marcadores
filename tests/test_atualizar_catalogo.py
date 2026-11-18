@@ -45,7 +45,7 @@ class AtualizarCatalogoTests(unittest.TestCase):
         self.assertEqual(resumo["versos_associados"], 0)
 
     def test_verso_sem_frente_nao_cria_marcador(self):
-        catalogo = "window.MARCADORES = [\\n];\\n"
+        catalogo = "window.MARCADORES = [\n];\n"
         atualizado, resumo = atualizar_catalogo(
             catalogo,
             ["imagens/so-verso-verso.jpg"],
@@ -57,7 +57,7 @@ class AtualizarCatalogoTests(unittest.TestCase):
         self.assertEqual(resumo["versos_sem_frente"], 1)
 
     def test_arquivo_frente_e_verso_seguem_a_logica_do_site(self):
-        catalogo = "window.MARCADORES = [\\n];\\n"
+        catalogo = "window.MARCADORES = [\n];\n"
         imagens = [
             "imagens/projeto-frente.jpg",
             "imagens/projeto.jpg",
