@@ -13,7 +13,7 @@
   const dialogTitle = document.getElementById("dialog-title");
 
   const IMAGE_EXTENSIONS = /\.(jpe?g|png|webp)$/i;
-  const API_URL = "https://api.github.com/repos/tiago-ps/marcadores/contents/imagens?ref=main";
+  const API_URL = "https://api.github.com/repos/BibliotecaIFMGSabara/marcadores/contents/imagens?ref=main";
   let loadedCount = 0;
   let collectionMarkers = [];
   let filteredMarkers = [];
