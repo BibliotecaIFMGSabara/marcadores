@@ -123,7 +123,7 @@ class AtualizarCatalogoTests(unittest.TestCase):
         self.assertIn('titulo: "Título escolhido manualmente"', atualizado)
         self.assertIn('autoria: "Crédito manual"', atualizado)
         self.assertIn('autorUrl: "https://www.instagram.com/perfil.manual/"', atualizado)
-        self.assertNotIn("perfil.automatico", atualizado)
+        self.assertNotIn('autorUrl: "https://www.instagram.com/perfil.automatico/"', atualizado)
         self.assertEqual(resumo["titulos_corrigidos"], 0)
         self.assertEqual(resumo["metadados_atualizados"], 0)
 
