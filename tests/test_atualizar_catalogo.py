@@ -25,7 +25,7 @@ class AtualizarCatalogoTests(unittest.TestCase):
         self.assertIn('autoria: "Pontos de Luta"', atualizado)
         self.assertIn('autorUrl: "https://www.instagram.com/pontosdeluta/"', atualizado)
         self.assertIn('verso: "imagens/existente-verso.png"', atualizado)
-        self.assertIn('titulo: "Novo marcador 6x1"', atualizado)
+        self.assertIn('titulo: "Novo Marcador 6x1"', atualizado)
         self.assertIn('imagem: "imagens/novo-marcador-6x1.jpg"', atualizado)
         self.assertIn('verso: "imagens/novo-marcador-6x1-verso.jpg"', atualizado)
         self.assertEqual(resumo["adicionados"], 1)
