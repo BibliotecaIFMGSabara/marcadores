@@ -75,6 +75,56 @@
     return humanizeTitle(filename);
   }
 
+  function formatMetadataText(value) {
+    const text = String(value || "")
+      .replace(/[_-]+/g, " ")
+      .replace(/\\s+/g, " ")
+      .trim();
+    const uniformCase = text === text.toLocaleLowerCase("pt-BR")
+      || text === text.toLocaleUpperCase("pt-BR");
+
+    return text.split(" ").filter(Boolean).map((word, index) => {
+      const lower = word.toLocaleLowerCase("pt-BR");
+      if (index > 0 && LOWERCASE_WORDS.has(lower)) return lower;
+      if (uniformCase) return lower.charAt(0).toLocaleUpperCase("pt-BR") + lower.slice(1);
+      return word;
+    }).join(" ");
+  }
+
+  function parseFilenameMetadata(filename) {
+    const stem = String(filename || "")
+      .replace(/\\.[^.]+$/, "")
+      .replace(/-(verso|frente)$/i, "");
+    const markerPattern = /-(autoria|link)-/ig;
+    const matches = Array.from(stem.matchAll(markerPattern));
+    const titlePart = matches.length ? stem.slice(0, matches[0].index) : stem;
+    const metadata = {
+      titulo: formatTitle(titlePart),
+      autoria: "",
+      autorUrl: ""
+    };
+
+    matches.forEach((match, index) => {
+      const start = match.index + match[0].length;
+      const end = index + 1 < matches.length ? matches[index + 1].index : stem.length;
+      const value = stem.slice(start, end).replace(/^[-_]+|[-_]+$/g, "").trim();
+      if (!value) return;
+
+      if (match[1].toLowerCase() === "autoria") {
+        metadata.autoria = formatMetadataText(value);
+      } else if (match[1].toLowerCase() === "link") {
+        try {
+          const decoded = decodeURIComponent(value);
+          if (/^https?:\\/\\//i.test(decoded)) metadata.autorUrl = decoded;
+        } catch (error) {
+          // Um link mal codificado é ignorado; os demais dados do marcador continuam válidos.
+        }
+      }
+    });
+
+    return metadata;
+  }
+
   function updateState() {
     emptyState.hidden = loadedCount > 0;
     const total = collectionMarkers.length;
@@ -283,12 +333,13 @@
       const verso = [".jpg", ".jpeg", ".png", ".webp"]
         .map(ext => byName.get((baseName + "-verso" + ext).toLowerCase())).find(Boolean);
       const catalogEntry = catalogByImage.get(front.name.toLowerCase()) || {};
+      const filenameMetadata = parseFilenameMetadata(front.name);
       markers.push({
-        titulo: catalogEntry.titulo || formatTitle(front.name),
+        titulo: catalogEntry.titulo || filenameMetadata.titulo || formatTitle(front.name),
         imagem: front.download_url,
         verso: verso ? verso.download_url : null,
-        autoria: catalogEntry.autoria || "",
-        autorUrl: catalogEntry.autorUrl || ""
+        autoria: catalogEntry.autoria || filenameMetadata.autoria || "",
+        autorUrl: catalogEntry.autorUrl || filenameMetadata.autorUrl || ""
       });
       used.add(front.name);
       if (verso) used.add(verso.name);
@@ -296,7 +347,14 @@
     images.forEach(file => {
       if (used.has(file.name)) return;
       const catalogEntry = catalogByImage.get(file.name.toLowerCase()) || {};
-      markers.push({ titulo: catalogEntry.titulo || formatTitle(file.name), imagem: file.download_url, verso: null, autoria: catalogEntry.autoria || "", autorUrl: catalogEntry.autorUrl || "" });
+      const filenameMetadata = parseFilenameMetadata(file.name);
+      markers.push({
+        titulo: catalogEntry.titulo || filenameMetadata.titulo || formatTitle(file.name),
+        imagem: file.download_url,
+        verso: null,
+        autoria: catalogEntry.autoria || filenameMetadata.autoria || "",
+        autorUrl: catalogEntry.autorUrl || filenameMetadata.autorUrl || ""
+      });
     });
     collectionMarkers = markers;
     applyGallerySearch();
