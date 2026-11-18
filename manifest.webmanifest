@@ -3,13 +3,22 @@
   "short_name": "Entrelinhas",
   "description": "Coleção de marcadores de página criados por estudantes e pela comunidade da biblioteca.",
   "lang": "pt-BR",
-  "start_url": "./",
+  "id": "./",
+  "start_url": "./?source=pwa",
   "scope": "./",
   "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
   "background_color": "#f4f1e9",
-  "theme_color": "#f4f1e9",
+  "theme_color": "#1e5546",
   "icons": [
-    { "src": "./icons/icon-192.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
-    { "src": "./icons/icon-512.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+    {
+      "src": "./icons/biblioteca-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
   ]
 }
