@@ -5,15 +5,11 @@ Convenção recomendada:
   nome-do-marcador.jpg
   nome-do-marcador-verso.jpg
   nome-do-marcador-autoria-Nome-Sobrenome.jpg
-  nome-do-marcador-autoria-Nome-link-URL-codificada.jpg
+  nome-do-marcador-autoria-Nome-Sobrenome-link-URL-codificada.jpg
 
 O sufixo -autoria- separa o crédito; -link- recebe uma URL codificada.
 A automação preenche apenas campos ausentes ou vazios e preserva dados manuais.
-  nome-do-marcador.jpg
-  nome-do-marcador-verso.jpg
-
-O script só acrescenta registros ausentes ou associa um verso ainda não
-cadastrado. Nunca remove entradas nem substitui metadados manuais.
+Também corrige títulos antigos gerados automaticamente quando continham os sufixos.
 """
 
 from __future__ import annotations
@@ -29,6 +25,7 @@ from urllib.parse import unquote
 
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 OBJECT_RE = re.compile(r"\{[^{}]*\}", re.DOTALL)
+TITLE_FIELD_RE = re.compile(r"\btitulo\s*:\s*([\"'])(.*?)\1")
 IMAGE_FIELD_RE = re.compile(r"\bimagem\s*:\s*([\"'])(.*?)\1")
 VERSO_FIELD_RE = re.compile(r"\bverso\s*:\s*([\"'])(.*?)\1")
 AUTORIA_FIELD_RE = re.compile(r"\bautoria\s*:\s*([\"'])(.*?)\1")
@@ -135,6 +132,34 @@ def humanize_title(filename: str) -> str:
     return " ".join(result)
 
 
+def legacy_humanize_title(filename: str) -> str:
+    """Reproduz o título gerado pela versão anterior do workflow."""
+    stem = Path(filename).stem
+    stem = re.sub(r"-(verso|frente)$", "", stem, flags=re.IGNORECASE)
+    stem = re.sub(
+        r"([a-záàâãéêíóôõúç])([A-ZÁÀÂÃÉÊÍÓÔÕÚÇ])",
+        r"\1 \2",
+        stem,
+    )
+    stem = re.sub(r"[_-]+", " ", stem)
+    words = re.sub(r"\s+", " ", stem).strip().split()
+
+    result = []
+    for index, original in enumerate(words):
+        word = original.lower()
+        word = TITLE_REPLACEMENTS.get(word, word)
+        if index > 0 and word in LOWERCASE_WORDS:
+            result.append(word)
+        elif re.fullmatch(r"\d+(?:x\d+)?", word):
+            result.append(word)
+        elif word:
+            result.append(word[0].upper() + word[1:])
+        else:
+            result.append(word)
+
+    return " ".join(result)
+
+
 def parse_catalog_entries(catalog: str) -> tuple[int, list[dict]]:
     array_match = re.search(r"window\.MARCADORES\s*=\s*\[", catalog)
     if not array_match:
@@ -151,6 +176,7 @@ def parse_catalog_entries(catalog: str) -> tuple[int, list[dict]]:
         if not image_match:
             continue
 
+        title_match = TITLE_FIELD_RE.search(match.group(0))
         verso_match = VERSO_FIELD_RE.search(match.group(0))
         autoria_match = AUTORIA_FIELD_RE.search(match.group(0))
         autor_url_match = AUTOR_URL_FIELD_RE.search(match.group(0))
@@ -158,6 +184,7 @@ def parse_catalog_entries(catalog: str) -> tuple[int, list[dict]]:
             "start": array_match.end() + match.start(),
             "end": array_match.end() + match.end(),
             "object": match.group(0),
+            "titulo": title_match.group(2) if title_match else "",
             "imagem": image_match.group(2),
             "verso": verso_match.group(2) if verso_match else "",
             "autoria": autoria_match.group(2) if autoria_match else "",
@@ -269,6 +296,7 @@ def atualizar_catalogo(
     new_records = []
     linked_versos = 0
     metadata_updated = 0
+    titles_corrected = 0
 
     for front in sorted(fronts, key=str.casefold):
         verso = find_verso(front, by_name)
@@ -278,6 +306,15 @@ def atualizar_catalogo(
 
         if existing:
             updated_object = existing["object"]
+
+            # Corrige somente o título que a versão anterior gerou a partir do nome inteiro.
+            old_generated_title = legacy_humanize_title(Path(front).name)
+            new_generated_title = humanize_title(Path(front).name)
+            title_match = TITLE_FIELD_RE.search(updated_object)
+            if title_match and title_match.group(2) == old_generated_title and new_generated_title != old_generated_title:
+                replacement = "titulo: " + json.dumps(new_generated_title, ensure_ascii=False)
+                updated_object = updated_object[:title_match.start()] + replacement + updated_object[title_match.end():]
+                titles_corrected += 1
 
             # Preenche apenas campos ausentes ou vazios; nunca substitui dados manuais.
             if verso and not existing["verso"]:
@@ -334,6 +371,7 @@ def atualizar_catalogo(
         "adicionados": len(new_records),
         "versos_associados": linked_versos,
         "metadados_atualizados": metadata_updated,
+        "titulos_corrigidos": titles_corrected,
         "versos_sem_frente": ignored_versos,
     }
 
@@ -402,7 +440,8 @@ def main() -> int:
             "Catálogo atualizado: "
             f"{summary['adicionados']} novo(s) marcador(es); "
             f"{summary['versos_associados']} verso(s) associado(s); "
-            f"{summary['metadados_atualizados']} metadado(s) preenchido(s)."
+            f"{summary['metadados_atualizados']} metadado(s) preenchido(s); "
+            f"{summary['titulos_corrigidos']} título(s) corrigido(s)."
         )
     else:
         print("Catálogo já estava atualizado; nenhuma alteração necessária.")
