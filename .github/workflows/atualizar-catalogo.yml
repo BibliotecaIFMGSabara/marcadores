@@ -42,15 +42,26 @@ jobs:
         run: |
           python scripts/atualizar_catalogo.py --git-diff "$COMMIT_ANTERIOR" "$COMMIT_ATUAL"
 
-      - name: Salvar catálogo no GitHub
+      - name: Salvar catálogo e acionar publicação do site
+        env:
+          PUBLISH_TOKEN: ${{ secrets.MARCADORES_PUBLISH_TOKEN }}
         run: |
           if git diff --quiet -- catalogo.js; then
             echo "Nenhuma alteração no catálogo."
             exit 0
           fi
 
+          if [ -z "$PUBLISH_TOKEN" ]; then
+            echo "::error::Configure o segredo MARCADORES_PUBLISH_TOKEN nas configurações do repositório para que o GitHub Pages publique as alterações."
+            exit 1
+          fi
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add catalogo.js
           git commit -m "Atualiza catálogo automaticamente"
-          git push
+
+          AUTH_HEADER="$(printf 'x-access-token:%s' "$PUBLISH_TOKEN" | base64 | tr -d '\n')"
+          git config --local --unset-all http.https://github.com/.extraheader || true
+          git config --local http.https://github.com/.extraheader "AUTHORIZATION: basic $AUTH_HEADER"
+          git push origin HEAD:main
