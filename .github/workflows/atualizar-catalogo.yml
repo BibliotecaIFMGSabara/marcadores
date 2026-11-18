@@ -34,8 +34,8 @@ jobs:
 
       - name: Atualizar catálogo com as imagens deste envio
         env:
-          COMMIT_ANTERIOR: \${{ github.event.before }}
-          COMMIT_ATUAL: \${{ github.sha }}
+          COMMIT_ANTERIOR: ${{ github.event.before }}
+          COMMIT_ATUAL: ${{ github.sha }}
         run: |
           python scripts/atualizar_catalogo.py --git-diff "$COMMIT_ANTERIOR" "$COMMIT_ATUAL"
 
