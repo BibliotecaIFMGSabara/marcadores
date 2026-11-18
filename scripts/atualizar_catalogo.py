@@ -4,6 +4,13 @@
 Convenção recomendada:
   nome-do-marcador.jpg
   nome-do-marcador-verso.jpg
+  nome-do-marcador-autoria-Nome-Sobrenome.jpg
+  nome-do-marcador-autoria-Nome-link-URL-codificada.jpg
+
+O sufixo -autoria- separa o crédito; -link- recebe uma URL codificada.
+A automação preenche apenas campos ausentes ou vazios e preserva dados manuais.
+  nome-do-marcador.jpg
+  nome-do-marcador-verso.jpg
 
 O script só acrescenta registros ausentes ou associa um verso ainda não
 cadastrado. Nunca remove entradas nem substitui metadados manuais.
@@ -24,8 +31,8 @@ IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 OBJECT_RE = re.compile(r"\{[^{}]*\}", re.DOTALL)
 IMAGE_FIELD_RE = re.compile(r"\bimagem\s*:\s*([\"'])(.*?)\1")
 VERSO_FIELD_RE = re.compile(r"\bverso\s*:\s*([\"'])(.*?)\1")
-AUTORIA_FIELD_RE = re.compile(r"\\bautoria\\s*:\\s*([\\\"'])(.*?)\\1")
-AUTOR_URL_FIELD_RE = re.compile(r"\\bautorUrl\\s*:\\s*([\\\"'])(.*?)\\1")
+AUTORIA_FIELD_RE = re.compile(r"\bautoria\s*:\s*([\"'])(.*?)\1")
+AUTOR_URL_FIELD_RE = re.compile(r"\bautorUrl\s*:\s*([\"'])(.*?)\1")
 FIELD_PATTERNS = {
     "verso": VERSO_FIELD_RE,
     "autoria": AUTORIA_FIELD_RE,
