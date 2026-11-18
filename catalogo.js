@@ -90,4 +90,5 @@ window.MARCADORES = [
   { titulo: "Um Dia De Cada Vez", imagem: "imagens/um-dia-de-cada-vez.jpg", verso: "imagens/um-dia-de-cada-vez-verso.jpg", autoria: "Elen" },
   { titulo: "Ensolarado", imagem: "imagens/ensolarado-verso.jpg" },
   { titulo: "Totoro", imagem: "imagens/totoro-autoria-maria-laura-pedrosa.png", autoria: "Maria Laura Pedrosa"},
+  { titulo: "Totoro", imagem: "imagens/totoro.png" }
 ];
