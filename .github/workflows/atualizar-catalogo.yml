@@ -6,6 +6,9 @@ on:
       - main
     paths:
       - "imagens/**"
+      - "scripts/**"
+      - "tests/**"
+      - ".github/workflows/atualizar-catalogo.yml"
 
 permissions:
   contents: write
