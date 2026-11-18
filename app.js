@@ -78,7 +78,7 @@
   function formatMetadataText(value) {
     const text = String(value || "")
       .replace(/[_-]+/g, " ")
-      .replace(/\\s+/g, " ")
+      .replace(/\s+/g, " ")
       .trim();
     const uniformCase = text === text.toLocaleLowerCase("pt-BR")
       || text === text.toLocaleUpperCase("pt-BR");
@@ -93,7 +93,7 @@
 
   function parseFilenameMetadata(filename) {
     const stem = String(filename || "")
-      .replace(/\\.[^.]+$/, "")
+      .replace(/\.[^.]+$/, "")
       .replace(/-(verso|frente)$/i, "");
     const markerPattern = /-(autoria|link)-/ig;
     const matches = Array.from(stem.matchAll(markerPattern));
@@ -115,7 +115,7 @@
       } else if (match[1].toLowerCase() === "link") {
         try {
           const decoded = decodeURIComponent(value);
-          if (/^https?:\\/\\//i.test(decoded)) metadata.autorUrl = decoded;
+          if (/^https?:\/\//i.test(decoded)) metadata.autorUrl = decoded;
         } catch (error) {
           // Um link mal codificado é ignorado; os demais dados do marcador continuam válidos.
         }
