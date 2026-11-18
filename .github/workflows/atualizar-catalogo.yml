@@ -1,0 +1,53 @@
+name: Atualizar catálogo de marcadores
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "imagens/**"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: atualizar-catalogo-marcadores
+  cancel-in-progress: false
+
+jobs:
+  atualizar-catalogo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Testar atualização do catálogo
+        run: python -m unittest discover -s tests -v
+
+      - name: Atualizar catálogo com as imagens deste envio
+        env:
+          COMMIT_ANTERIOR: \${{ github.event.before }}
+          COMMIT_ATUAL: \${{ github.sha }}
+        run: |
+          python scripts/atualizar_catalogo.py --git-diff "$COMMIT_ANTERIOR" "$COMMIT_ATUAL"
+
+      - name: Salvar catálogo no GitHub
+        run: |
+          if git diff --quiet -- catalogo.js; then
+            echo "Nenhuma alteração no catálogo."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add catalogo.js
+          git commit -m "Atualiza catálogo automaticamente"
+          git push
