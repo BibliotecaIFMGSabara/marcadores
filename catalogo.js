@@ -38,7 +38,7 @@ window.MARCADORES = [
   { titulo: "Estrela", imagem: "imagens/estrela.jpg" },
   { titulo: "Estrelas E Cerejas", imagem: "imagens/estrelas-e-cerejas.jpg" },
   { titulo: "Estrelas", imagem: "imagens/estrelas.jpg" },
-  { titulo: "Fimdaescala6x1", imagem: "imagens/fimdaescala6x1.jpg", autoria: "Pontos de Luta", autorUrl: "https://www.instagram.com/pontosdeluta/" },
+  { titulo: "Fim da escala 6x1", imagem: "imagens/fim-da-escala-6x1.jpg", autoria: "Pontos de Luta", autorUrl: "https://www.instagram.com/pontosdeluta/" },
   { titulo: "Flores", imagem: "imagens/flores.jpg" },
   { titulo: "Flores2", imagem: "imagens/flores2.jpg" },
   { titulo: "Flores3", imagem: "imagens/flores3.jpg" },
