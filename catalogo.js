@@ -59,7 +59,7 @@ window.MARCADORES = [
   { titulo: "Lua", imagem: "imagens/lua.jpg" },
   { titulo: "Luisa", imagem: "imagens/luisa.jpg" },
   { titulo: "Maria (2)", imagem: "imagens/maria (2).jpg" },
-  { titulo: "Maria", imagem: "imagens/maria.jpg", verso: "imagens/maria-verso.jpg"},
+  { titulo: "Maria", imagem: "imagens/maria.jpg" },
   { titulo: "Matemática", imagem: "imagens/matematica.jpg", autoria: "Lavinia" },
   { titulo: "Melancia", imagem: "imagens/melancia.jpg" },
   { titulo: "Menina Luisa", imagem: "imagens/menina-luisa.jpg", verso: "imagens/menina-luisa-verso.jpg", autoria: "Luisa Cordeiro" },
@@ -90,11 +90,4 @@ window.MARCADORES = [
   { titulo: "Um Dia De Cada Vez", imagem: "imagens/um-dia-de-cada-vez.jpg", verso: "imagens/um-dia-de-cada-vez-verso.jpg", autoria: "Elen" },
   { titulo: "Ensolarado", imagem: "imagens/ensolarado-verso.jpg" },
   { titulo: "Totoro", imagem: "imagens/totoro-autoria-maria-laura-pedrosa.png", autoria: "Maria Laura Pedrosa"},
-  { titulo: "Ensolarado", imagem: "imagens/ensolarado.jpg", verso: "imagens/ensolarado-verso.jpg" },
-  { titulo: "Flores3", imagem: "imagens/flores3.png" },
-  { titulo: "Menina", imagem: "imagens/menina.jpg", verso: "imagens/menina-verso.jpg" },
-  { titulo: "Paisagem", imagem: "imagens/paisagem.jpg" },
-  { titulo: "Ursinho", imagem: "imagens/ursinho.jpg" },
-  { titulo: "Vaca Abduzida", imagem: "imagens/vaca-abduzida.jpg" },
-  { titulo: "Você e Linda o", imagem: "imagens/voce-e-linda-o-autoria-lavinia.jpg", autoria: "Lavinia" }
 ];
