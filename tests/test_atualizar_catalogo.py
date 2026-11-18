@@ -75,7 +75,7 @@ class AtualizarCatalogoTests(unittest.TestCase):
 
 
     def test_reconhece_autoria_e_link_no_nome_do_arquivo(self):
-        catalogo = "window.MARCADORES = [\\n];\\n"
+        catalogo = "window.MARCADORES = [\n];\n"
         imagem = (
             "imagens/totoro-autoria-maria-laura-pedrosa-"
             "link-https%3A%2F%2Fwww.instagram.com%2Fmaria.laura%2F.png"
@@ -107,7 +107,7 @@ class AtualizarCatalogoTests(unittest.TestCase):
         catalogo = '''window.MARCADORES = [
   {
     titulo: "Título escolhido manualmente",
-    imagem: "imagens/marcador-autoria-nome-do-arquivo.png",
+    imagem: "imagens/marcador-autoria-nome-do-arquivo-link-https%3A%2F%2Fwww.instagram.com%2Fperfil.automatico%2F.png",
     autoria: "Crédito manual",
     autorUrl: "https://www.instagram.com/perfil.manual/"
   }
