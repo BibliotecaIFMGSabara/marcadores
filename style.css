@@ -1147,7 +1147,7 @@ a.product-author { color:var(--blue); text-decoration:underline; text-underline-
     transform .6s cubic-bezier(.2,.7,.2,1),
     filter .6s cubic-bezier(.2,.7,.2,1);
 }
-.product-image-wrap.has-verso:has(.marker-flip-inner .product-side:first-child:hover) .marker-shadow img {
+.product-image-wrap.has-verso:has(.marker-flip-inner .product-side:first-child:hover, .marker-flip-inner .product-side:nth-child(2):hover) .marker-shadow img {
   transform:translateY(3.75%) scale(1.12);
   filter:brightness(0) blur(clamp(7.32px, 4.88cqw, 17.08px));
 }
