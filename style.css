@@ -476,8 +476,7 @@ h1 em, h2 em, h3 em { color: var(--coral); font-family: var(--serif); font-weigh
   height:100%;
   display:block;
   object-fit:contain;
-  filter:drop-shadow(0 12px 18px rgba(32,34,31,.36));
-  opacity:1;
+  filter:brightness(0) opacity(.16) drop-shadow(0 12px 18px rgba(32,34,31,.36));
 }
 .product-image-wrap.has-verso .marker-flip-inner {
   position:absolute;
