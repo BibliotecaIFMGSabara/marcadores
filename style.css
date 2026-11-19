@@ -458,7 +458,7 @@ h1 em, h2 em, h3 em { color: var(--coral); font-family: var(--serif); font-weigh
 }
 .product-image-wrap.has-verso {
   background:#dedbd1;
-  perspective:1000px;
+  perspective:850px;
   perspective-origin:50% 50%;
   isolation:isolate;
 }
@@ -466,7 +466,7 @@ h1 em, h2 em, h3 em { color: var(--coral); font-family: var(--serif); font-weigh
   position:absolute;
   inset:0;
   transform-style:preserve-3d;
-  transition:transform .72s cubic-bezier(.22,.72,.18,1);
+  transition:transform .9s cubic-bezier(.2,.68,.25,1);
   will-change:transform;
 }
 .product-image-wrap.has-verso.is-flipped .marker-flip-inner {
@@ -484,6 +484,15 @@ h1 em, h2 em, h3 em { color: var(--coral); font-family: var(--serif); font-weigh
 }
 .product-image-wrap.has-verso .product-side:nth-child(2) {
   transform:rotateY(180deg);
+}
+.product-image-wrap.has-verso .product-side::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(90deg, rgba(32,34,31,.16), transparent 8%, transparent 92%, rgba(32,34,31,.12));
+  box-shadow:inset 0 0 0 1px rgba(32,34,31,.10);
+  opacity:.42;
 }
 .product-side {
   position:relative; display:block; width:100%; height:100%; flex:none; min-width:0;
