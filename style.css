@@ -476,7 +476,7 @@ h1 em, h2 em, h3 em { color: var(--coral); font-family: var(--serif); font-weigh
   height:100%;
   display:block;
   object-fit:contain;
-  filter:brightness(0) opacity(.16) drop-shadow(0 12px 18px rgba(32,34,31,.36));
+  filter:drop-shadow(0 12px 18px rgba(32,34,31,.36));
 }
 .product-image-wrap.has-verso .marker-flip-inner {
   position:absolute;
@@ -697,6 +697,7 @@ a.product-author { color:var(--blue); text-decoration:underline; text-underline-
   .gallery-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
   .product-image-wrap { min-height:0; aspect-ratio:1 / 2; }
   .product-side { padding:8px 6px 25px; }
+  .product-image-wrap.has-verso .marker-shadow { padding:8px 6px 25px; }
   .product-name { font-size:15px; }
   .manifesto h2 { font-size: 40px; }
 }
@@ -1130,7 +1131,7 @@ a.product-author { color:var(--blue); text-decoration:underline; text-underline-
 
 /* Giro 3D dos marcadores frente e verso */
 .product-image-wrap.has-verso .marker-flip-inner { transform-origin:center center; }
-.product-image-wrap.has-verso .product-side { cursor:zoom-in; background:transparent; }
+.product-image-wrap.has-verso .product-side { cursor:zoom-in; background:#f8f5ec; }
 .product-image-wrap.has-verso .product-side img,
 .product-image-wrap.has-verso .product-side:hover img { filter:none; }
 @media (prefers-reduced-motion: reduce) {
