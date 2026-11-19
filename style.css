@@ -457,10 +457,11 @@ h1 em, h2 em, h3 em { color: var(--coral); font-family: var(--serif); font-weigh
   display:block; position:relative;
 }
 .product-image-wrap.has-verso {
-  background:#dedbd1;
+  background:#f8f5ec;
   perspective:850px;
   perspective-origin:50% 50%;
   isolation:isolate;
+  container-type:inline-size;
 }
 .product-image-wrap.has-verso .marker-shadow {
   position:absolute;
@@ -469,14 +470,17 @@ h1 em, h2 em, h3 em { color: var(--coral); font-family: var(--serif); font-weigh
   padding:18px 16px 28px;
   box-sizing:border-box;
   pointer-events:none;
-  overflow:hidden;
+  overflow:visible;
 }
 .product-image-wrap.has-verso .marker-shadow img {
   width:100%;
   height:100%;
   display:block;
   object-fit:contain;
-  filter:drop-shadow(0 12px 18px rgba(32,34,31,.36));
+  opacity:.28;
+  filter:brightness(0) blur(clamp(6px, 4cqw, 14px));
+  transform:translateY(3%) scale(1.06);
+  transform-origin:50% 50%;
 }
 .product-image-wrap.has-verso .marker-flip-inner {
   position:absolute;
@@ -1131,7 +1135,7 @@ a.product-author { color:var(--blue); text-decoration:underline; text-underline-
 
 /* Giro 3D dos marcadores frente e verso */
 .product-image-wrap.has-verso .marker-flip-inner { transform-origin:center center; }
-.product-image-wrap.has-verso .product-side { cursor:zoom-in; background:#f8f5ec; }
+.product-image-wrap.has-verso .product-side { cursor:zoom-in; background:transparent; }
 .product-image-wrap.has-verso .product-side img,
 .product-image-wrap.has-verso .product-side:hover img { filter:none; }
 @media (prefers-reduced-motion: reduce) {
