@@ -1112,7 +1112,7 @@ a.product-author { color:var(--blue); text-decoration:underline; text-underline-
 
 /* Giro 3D dos marcadores frente e verso */
 .product-image-wrap.has-verso .marker-flip-inner { transform-origin:center center; }
-.product-image-wrap.has-verso .product-side { cursor:zoom-in; }
+.product-image-wrap.has-verso .product-side { cursor:zoom-in; background:transparent; }
 @media (prefers-reduced-motion: reduce) {
   .product-image-wrap.has-verso .marker-flip-inner { transition:none !important; }
 }
