@@ -163,21 +163,40 @@
   }
 
   function setupMobileFlip(wrapper, frontButton, backButton) {
+    const flipper = document.createElement("div");
+    flipper.className = "marker-flip-inner";
+    wrapper.appendChild(flipper);
+    flipper.append(frontButton, backButton);
+
     frontButton.classList.add("is-active");
+    backButton.classList.remove("is-active");
+    frontButton.inert = false;
+    backButton.inert = true;
+    frontButton.setAttribute("aria-hidden", "false");
+    backButton.setAttribute("aria-hidden", "true");
+
     const toggle = document.createElement("button");
     toggle.type = "button";
     toggle.className = "mobile-flip-toggle";
     toggle.textContent = "↔";
     toggle.setAttribute("aria-label", "Ver verso do marcador");
     let showingBack = false;
+
     function showSide(back) {
       showingBack = back;
+      wrapper.classList.toggle("is-flipped", back);
       frontButton.classList.toggle("is-active", !back);
       backButton.classList.toggle("is-active", back);
+      frontButton.inert = back;
+      backButton.inert = !back;
+      frontButton.setAttribute("aria-hidden", String(back));
+      backButton.setAttribute("aria-hidden", String(!back));
       toggle.setAttribute("aria-label", back ? "Ver frente do marcador" : "Ver verso do marcador");
     }
+
     toggle.addEventListener("click", () => showSide(!showingBack));
     wrapper.appendChild(toggle);
+
     let startX = 0, startY = 0;
     wrapper.addEventListener("touchstart", event => {
       if (!event.touches || event.touches.length !== 1) return;
