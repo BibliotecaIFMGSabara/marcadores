@@ -163,6 +163,17 @@
   }
 
   function setupMobileFlip(wrapper, frontButton, backButton) {
+    const shadow = document.createElement("div");
+    shadow.className = "marker-shadow";
+    shadow.setAttribute("aria-hidden", "true");
+    const shadowImage = frontButton.querySelector("img")?.cloneNode(true);
+    if (shadowImage) {
+      shadowImage.removeAttribute("alt");
+      shadowImage.removeAttribute("loading");
+      shadow.appendChild(shadowImage);
+      wrapper.appendChild(shadow);
+    }
+
     const flipper = document.createElement("div");
     flipper.className = "marker-flip-inner";
     wrapper.appendChild(flipper);
