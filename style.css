@@ -1139,14 +1139,17 @@ a.product-author { color:var(--blue); text-decoration:underline; text-underline-
 .product-image-wrap.has-verso .product-side img,
 .product-image-wrap.has-verso .product-side:hover img { filter:none; }
 
-/* No hover, a sombra cresce mais que a frente:
+/* No hover, a sombra cresce e se suaviza mais que a frente:
    frente +3,5%; sombra de 1.06 para 1.12 (+5,7%).
-   Assim, a distância visual entre marcador e sombra aumenta. */
+   Desfoque +22% e deslocamento vertical +25%, sugerindo maior distância. */
 .product-image-wrap.has-verso .marker-shadow img {
-  transition:transform .6s cubic-bezier(.2,.7,.2,1);
+  transition:
+    transform .6s cubic-bezier(.2,.7,.2,1),
+    filter .6s cubic-bezier(.2,.7,.2,1);
 }
 .product-image-wrap.has-verso:has(.marker-flip-inner .product-side:first-child:hover) .marker-shadow img {
-  transform:translateY(3%) scale(1.12);
+  transform:translateY(3.75%) scale(1.12);
+  filter:brightness(0) blur(clamp(7.32px, 4.88cqw, 17.08px));
 }
 @media (prefers-reduced-motion: reduce) {
   .product-image-wrap.has-verso .marker-flip-inner { transition:none !important; }
