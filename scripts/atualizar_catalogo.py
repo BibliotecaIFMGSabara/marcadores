@@ -11,7 +11,9 @@ Convenção recomendada:
 
 O token -verso- identifica o verso mesmo quando aparece antes ou depois da autoria.
 O sufixo -autoria- separa o crédito; -link- recebe uma URL codificada.
-A automação preenche apenas campos ausentes ou vazios e preserva dados manuais.
+A automação preenche apenas metadados ausentes ou vazios e preserva dados manuais.
+O vínculo de verso acompanha os arquivos existentes: referências quebradas são corrigidas
+ou removidas, e registros cuja imagem principal deixou de existir são removidos do catálogo.
 Também corrige títulos antigos gerados automaticamente quando continham os sufixos.
 """
 
@@ -309,6 +311,55 @@ def upsert_string_field(entry_object: str, field_name: str, value: str) -> tuple
     return prefix + separator + field + entry_object[closing:], True
 
 
+def remove_string_field(entry_object: str, field_name: str) -> tuple[str, bool]:
+    """Remove um campo textual do registro, preservando os demais campos."""
+    field_pattern = FIELD_PATTERNS[field_name]
+    match = field_pattern.search(entry_object)
+    if not match:
+        return entry_object, False
+
+    start = match.start()
+    end = match.end()
+
+    after = end
+    while after < len(entry_object) and entry_object[after].isspace():
+        after += 1
+
+    if after < len(entry_object) and entry_object[after] == ",":
+        end = after + 1
+        while end < len(entry_object) and entry_object[end].isspace():
+            end += 1
+    else:
+        before = start
+        while before > 0 and entry_object[before - 1].isspace():
+            before -= 1
+        if before > 0 and entry_object[before - 1] == ",":
+            before -= 1
+            while before > 0 and entry_object[before - 1].isspace():
+                before -= 1
+            start = before
+
+    updated = entry_object[:start] + entry_object[end:]
+    updated = re.sub(r",(s*})", r"\1", updated, count=1)
+    return updated, True
+
+
+def replace_string_field(entry_object: str, field_name: str, value: str) -> tuple[str, bool]:
+    """Substitui um campo textual existente; se ausente, preenche-o."""
+    if not value:
+        return remove_string_field(entry_object, field_name)
+
+    field_pattern = FIELD_PATTERNS[field_name]
+    match = field_pattern.search(entry_object)
+    if not match:
+        return upsert_string_field(entry_object, field_name, value)
+
+    serialized = json.dumps(value, ensure_ascii=False)
+    replacement = field_name + ": " + serialized
+    updated = entry_object[:match.start()] + replacement + entry_object[match.end():]
+    return updated, updated != entry_object
+
+
 def atualizar_catalogo(
     catalog: str,
     image_paths: list[str],
@@ -321,6 +372,13 @@ def atualizar_catalogo(
         normalize_path(entry["imagem"]): entry
         for entry in entries
     }
+    existing_image_keys = {normalize_path(path) for path in by_name.values()}
+    removed_entry_indexes = {
+        index
+        for index, entry in enumerate(entries)
+        if normalize_path(entry["imagem"]) not in existing_image_keys
+    }
+    stale_image_records = len(removed_entry_indexes)
 
     if changed_paths is None:
         candidates_to_check = list(by_name.values())
@@ -351,6 +409,8 @@ def atualizar_catalogo(
     replacements = []
     new_records = []
     linked_versos = 0
+    versos_atualizados = 0
+    versos_removidos = 0
     metadata_updated = 0
     titles_corrected = 0
 
@@ -372,8 +432,21 @@ def atualizar_catalogo(
                 updated_object = updated_object[:title_match.start()] + replacement + updated_object[title_match.end():]
                 titles_corrected += 1
 
-            # Preenche apenas campos ausentes ou vazios; nunca substitui dados manuais.
-            if verso and not existing["verso"]:
+            # O vínculo com a imagem de verso deve refletir os arquivos atuais.
+            # Se o verso antigo foi apagado/renomeado, atualiza para o novo correspondente
+            # ou remove a referência se não existir mais nenhum verso.
+            if existing["verso"]:
+                existing_verso_key = normalize_path(existing["verso"])
+                if existing_verso_key not in existing_image_keys:
+                    if verso:
+                        updated_object, changed = replace_string_field(updated_object, "verso", verso)
+                        if changed:
+                            versos_atualizados += 1
+                    else:
+                        updated_object, changed = remove_string_field(updated_object, "verso")
+                        if changed:
+                            versos_removidos += 1
+            elif verso:
                 updated_object, changed = upsert_string_field(updated_object, "verso", verso)
                 if changed:
                     linked_versos += 1
@@ -410,9 +483,8 @@ def atualizar_catalogo(
     
     # Remove do catálogo os registros independentes de verso quando a frente
     # correspondente existe; a imagem passa a ser referenciada no campo "verso".
-    removed_verse_keys = set()
     front_keys = {normalize_path(front) for front in fronts}
-    for entry in entries:
+    for index, entry in enumerate(entries):
         base, side = split_side_marker(Path(entry["imagem"]).stem)
         if side != "verso":
             continue
@@ -426,13 +498,10 @@ def atualizar_catalogo(
         verse_key = normalize_path(entry["imagem"])
         if front_entry and front_entry["verso"] and normalize_path(front_entry["verso"]) != verse_key:
             continue
-        removed_verse_keys.add(verse_key)
+        removed_entry_indexes.add(index)
 
     operations = [(start, end, replacement) for start, end, replacement in replacements]
-    removed_indexes = [
-        index for index, entry in enumerate(entries)
-        if normalize_path(entry["imagem"]) in removed_verse_keys
-    ]
+    removed_indexes = sorted(removed_entry_indexes)
     if removed_indexes:
         runs = []
         run_start = run_end = removed_indexes[0]
@@ -474,9 +543,12 @@ def atualizar_catalogo(
     return updated, {
         "adicionados": len(new_records),
         "versos_associados": linked_versos,
+        "versos_atualizados": versos_atualizados,
+        "versos_removidos": versos_removidos,
         "metadados_atualizados": metadata_updated,
         "titulos_corrigidos": titles_corrected,
-        "registros_de_verso_mesclados": len(removed_verse_keys),
+        "registros_removidos": len(removed_entry_indexes),
+        "registros_de_verso_mesclados": len(removed_entry_indexes) - stale_image_records,
         "versos_sem_frente": ignored_versos,
     }
 
@@ -549,6 +621,9 @@ def main() -> int:
             "Catálogo atualizado: "
             f"{summary['adicionados']} novo(s) marcador(es); "
             f"{summary['versos_associados']} verso(s) associado(s); "
+            f"{summary['versos_atualizados']} verso(s) atualizado(s); "
+            f"{summary['versos_removidos']} verso(s) removido(s); "
+            f"{summary['registros_removidos']} registro(s) removido(s); "
             f"{summary['metadados_atualizados']} metadado(s) preenchido(s); "
             f"{summary['titulos_corrigidos']} título(s) corrigido(s)."
         )

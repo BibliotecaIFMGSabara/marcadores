@@ -129,6 +129,50 @@ class AtualizarCatalogoTests(unittest.TestCase):
         self.assertNotIn('titulo: "Qual e a Musica 4 Verso"', atualizado)
         self.assertEqual(resumo["registros_de_verso_mesclados"], 1)
 
+    def test_remove_registro_quando_imagem_principal_nao_existe_mais(self):
+        catalogo = '''window.MARCADORES = [
+  { titulo: "Antigo", imagem: "imagens/antigo.jpg", autoria: "Pessoa" },
+  { titulo: "Atual", imagem: "imagens/atual.jpg" }
+];
+'''
+        atualizado, resumo = atualizar_catalogo(
+            catalogo,
+            ["imagens/atual.jpg"],
+        )
+
+        self.assertIn('imagem: "imagens/atual.jpg"', atualizado)
+        self.assertNotIn('imagem: "imagens/antigo.jpg"', atualizado)
+        self.assertEqual(resumo["registros_removidos"], 1)
+
+    def test_atualiza_verso_quando_a_imagem_referenciada_foi_renomeada(self):
+        catalogo = '''window.MARCADORES = [
+  { titulo: "Marcador", imagem: "imagens/marcador.jpg", verso: "imagens/marcador-verso-antigo.jpg" }
+];
+'''
+        imagens = [
+            "imagens/marcador.jpg",
+            "imagens/marcador-verso-novo.jpg",
+        ]
+
+        atualizado, resumo = atualizar_catalogo(catalogo, imagens)
+
+        self.assertIn('verso: "imagens/marcador-verso-novo.jpg"', atualizado)
+        self.assertNotIn("marcador-verso-antigo.jpg", atualizado)
+        self.assertEqual(resumo["versos_atualizados"], 1)
+
+    def test_remove_verso_quando_a_imagem_referenciada_nao_existe_mais(self):
+        catalogo = '''window.MARCADORES = [
+  { titulo: "Marcador", imagem: "imagens/marcador.jpg", verso: "imagens/marcador-verso.jpg" }
+];
+'''
+        atualizado, resumo = atualizar_catalogo(
+            catalogo,
+            ["imagens/marcador.jpg"],
+        )
+
+        self.assertNotIn("verso:", atualizado)
+        self.assertEqual(resumo["versos_removidos"], 1)
+
     def test_reconhece_autoria_e_link_no_nome_do_arquivo(self):
         catalogo = "window.MARCADORES = [\n];\n"
         imagem = (
