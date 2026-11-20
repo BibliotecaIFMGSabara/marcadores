@@ -11,9 +11,25 @@
   const dialog = document.getElementById("image-dialog");
   const dialogImage = document.getElementById("dialog-image");
   const dialogTitle = document.getElementById("dialog-title");
+  const featuredStage = document.getElementById("featured-marker-stage");
+  const featuredTitle = document.getElementById("featured-marker-title");
+  const featuredAuthor = document.getElementById("featured-marker-author");
 
   const IMAGE_EXTENSIONS = /\.(jpe?g|png|webp)$/i;
   const API_URL = "https://api.github.com/repos/BibliotecaIFMGSabara/marcadores/contents/imagens?ref=main";
+  const FEATURED_FALLBACK_MARKERS = [
+    { titulo: "All My Loving", imagem: "./imagens/all-my-loving.jpg", verso: "./imagens/all-my-loving-verso.jpg", autoria: "Ana Clara" },
+    { titulo: "Batman", imagem: "./imagens/batman.jpg", verso: "./imagens/batman-verso.jpg", autoria: "Nayana Cristine" },
+    { titulo: "Cruz", imagem: "./imagens/cruz.jpg", verso: "./imagens/cruz-verso.jpg", autoria: "Emelly Nicolly" },
+    { titulo: "Hellboy", imagem: "./imagens/Hellboy.jpg", verso: "./imagens/Hellboy-verso.jpg", autoria: "Nayana Cristine" },
+    { titulo: "I Have No Mouth", imagem: "./imagens/i-have-no-mouth.jpg", verso: "./imagens/i-have-no-mouth-verso.jpg", autoria: "Nayana Cristine" },
+    { titulo: "I Heard", imagem: "./imagens/i-heard.jpg", verso: "./imagens/i-heard-verso.jpg" },
+    { titulo: "Laguna", imagem: "./imagens/laguna.jpg", verso: "./imagens/laguna-verso.jpg", autoria: "Ana Clara" },
+    { titulo: "Menino e o Mundo", imagem: "./imagens/menino-e-o-mundo.jpg", verso: "./imagens/menino-e-o-mundo-verso.jpg", autoria: "Vitória Pereira" },
+    { titulo: "Superman", imagem: "./imagens/superman.jpg", verso: "./imagens/superman-verso.jpg", autoria: "Nayana Cristine" },
+    { titulo: "Um Dia de Cada Vez", imagem: "./imagens/um-dia-de-cada-vez.jpg", verso: "./imagens/um-dia-de-cada-vez-verso.jpg", autoria: "Elen" }
+  ];
+  let featuredFlipTimer = null;
   let loadedCount = 0;
   let collectionMarkers = [];
   let filteredMarkers = [];
@@ -162,7 +178,8 @@
     return button;
   }
 
-  function setupMobileFlip(wrapper, frontButton, backButton) {
+  function setupMobileFlip(wrapper, frontButton, backButton, options = {}) {
+    const autoFlip = options.autoFlip === true;
     const shadow = document.createElement("div");
     shadow.className = "marker-shadow";
     shadow.setAttribute("aria-hidden", "true");
@@ -190,11 +207,6 @@
     frontButton.setAttribute("aria-hidden", "false");
     backButton.setAttribute("aria-hidden", "true");
 
-    const toggle = document.createElement("button");
-    toggle.type = "button";
-    toggle.className = "mobile-flip-toggle";
-    toggle.textContent = "↔";
-    toggle.setAttribute("aria-label", "Ver verso do marcador");
     let showingBack = false;
 
     // A sombra não gira junto com o marcador. Ela acompanha o ângulo do
@@ -312,21 +324,33 @@
       animateShadowTo(back ? 180 : 0);
     }
 
-    toggle.addEventListener("click", () => showSide(!showingBack));
-    wrapper.appendChild(toggle);
+    if (!autoFlip) {
+      const toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.className = "mobile-flip-toggle";
+      toggle.textContent = "↔";
+      toggle.setAttribute("aria-label", "Ver verso do marcador");
+      toggle.addEventListener("click", () => showSide(!showingBack));
+      wrapper.appendChild(toggle);
 
-    let startX = 0, startY = 0;
-    wrapper.addEventListener("touchstart", event => {
-      if (!event.touches || event.touches.length !== 1) return;
-      startX = event.touches[0].clientX;
-      startY = event.touches[0].clientY;
-    }, { passive:true });
-    wrapper.addEventListener("touchend", event => {
-      if (!event.changedTouches || !event.changedTouches.length) return;
-      const deltaX = event.changedTouches[0].clientX - startX;
-      const deltaY = event.changedTouches[0].clientY - startY;
-      if (Math.abs(deltaX) > 38 && Math.abs(deltaX) > Math.abs(deltaY) * 1.25) showSide(deltaX < 0);
-    }, { passive:true });
+      let startX = 0, startY = 0;
+      wrapper.addEventListener("touchstart", event => {
+        if (!event.touches || event.touches.length !== 1) return;
+        startX = event.touches[0].clientX;
+        startY = event.touches[0].clientY;
+      }, { passive:true });
+      wrapper.addEventListener("touchend", event => {
+        if (!event.changedTouches || !event.changedTouches.length) return;
+        const deltaX = event.changedTouches[0].clientX - startX;
+        const deltaY = event.changedTouches[0].clientY - startY;
+        if (Math.abs(deltaX) > 38 && Math.abs(deltaX) > Math.abs(deltaY) * 1.25) showSide(deltaX < 0);
+      }, { passive:true });
+    }
+
+    return {
+      showSide,
+      toggleSide: () => showSide(!showingBack)
+    };
   }
 
   function markerKey(marker) {
@@ -413,6 +437,46 @@
     }
     card.append(imageWrap, meta);
     return card;
+  }
+
+  function renderFeaturedMarker(sourceMarkers) {
+    if (!featuredStage || !featuredTitle || !featuredAuthor) return;
+
+    if (featuredFlipTimer !== null) {
+      window.clearInterval(featuredFlipTimer);
+      featuredFlipTimer = null;
+    }
+
+    const source = Array.isArray(sourceMarkers) ? sourceMarkers : collectionMarkers;
+    let candidates = source.filter(marker => marker && marker.imagem && marker.verso);
+    if (!candidates.length) candidates = FEATURED_FALLBACK_MARKERS;
+
+    if (!candidates.length) {
+      featuredStage.replaceChildren();
+      featuredTitle.textContent = "Destaque indisponível";
+      featuredAuthor.textContent = "Não foi possível carregar um marcador com frente e verso.";
+      return;
+    }
+
+    const marker = candidates[Math.floor(Math.random() * candidates.length)];
+    const wrapper = document.createElement("div");
+    wrapper.className = "product-image-wrap has-verso featured-marker-image";
+    wrapper.setAttribute("aria-label", "Marcador " + marker.titulo + " em destaque");
+
+    const frontButton = addImage(wrapper, marker.imagem, marker.titulo, "frente");
+    const backButton = addImage(wrapper, marker.verso, marker.titulo, "verso");
+    frontButton.querySelector("img").loading = "eager";
+    backButton.querySelector("img").loading = "eager";
+
+    const flipController = setupMobileFlip(wrapper, frontButton, backButton, { autoFlip:true });
+    featuredStage.replaceChildren(wrapper);
+    featuredTitle.textContent = marker.titulo;
+    featuredAuthor.textContent = marker.autoria ? "Por " + marker.autoria : "Marcador com frente e verso";
+
+    const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+    if (!reduceMotion) {
+      featuredFlipTimer = window.setInterval(() => flipController.toggleSide(), 4300);
+    }
   }
 
   function renderGalleryPage(reset) {
@@ -508,6 +572,7 @@
 
       const files = await response.json();
       renderMarkers(files);
+      renderFeaturedMarker();
     } catch (error) {
       // Mantém o catálogo antigo como reserva caso a API esteja indisponível.
       const fallback = Array.isArray(window.MARCADORES) ? window.MARCADORES : [];
@@ -519,6 +584,7 @@
         emptyState.hidden = false;
         itemCount.textContent = "NÃO FOI POSSÍVEL CARREGAR A COLEÇÃO";
       }
+      renderFeaturedMarker(FEATURED_FALLBACK_MARKERS);
     }
   }
 
