@@ -121,5 +121,18 @@ window.MARCADORES = [
   { titulo: "Paisagem", imagem: "imagens/paisagem.jpg" },
   { titulo: "Ursinho", imagem: "imagens/ursinho.jpg" },
   { titulo: "Vaca Abduzida", imagem: "imagens/vaca-abduzida.jpg" },
-  { titulo: "Você e Linda o", imagem: "imagens/voce-e-linda-o-autoria-lavinia.jpg", autoria: "Lavinia" }
+  { titulo: "Você e Linda o", imagem: "imagens/voce-e-linda-o-autoria-lavinia.jpg", autoria: "Lavinia" },
+  { titulo: "Amor", imagem: "imagens/amor-autoria-emelly-nicolly.png", verso: "imagens/amor-verso-autoria-emelly-nicolly.png", autoria: "Emelly Nicolly" },
+  { titulo: "Barquinho na Lagoa", imagem: "imagens/barquinho-na-lagoa.png" },
+  { titulo: "Boys Dont Cry", imagem: "imagens/boys-dont-cry-autoria-max.png", verso: "imagens/boys-dont-cry-verso-autoria-max.png", autoria: "Max" },
+  { titulo: "Casa de Campo", imagem: "imagens/casa-de-campo.png" },
+  { titulo: "Diamante Amarelo Azul", imagem: "imagens/diamante-amarelo-azul-autoria-max.png", verso: "imagens/diamante-amarelo-azul-verso-autoria-max.png", autoria: "Max" },
+  { titulo: "Flores6", imagem: "imagens/flores6.png" },
+  { titulo: "Laguna 2", imagem: "imagens/laguna-2.png" },
+  { titulo: "Laranjas", imagem: "imagens/laranjas.png" },
+  { titulo: "Maçã Mordida", imagem: "imagens/maçã-mordida.png" },
+  { titulo: "Piquenique", imagem: "imagens/piquenique.png" },
+  { titulo: "Qual e a Musica 1", imagem: "imagens/qual-e-a-musica-1-autoria-alex-alves.png", verso: "imagens/qual-e-a-musica-1-verso-autoria-alex-alves.png", autoria: "Alex Alves" },
+  { titulo: "Qual e a Musica 2", imagem: "imagens/qual-e-a-musica-2-autoria-alex-alves.png", verso: "imagens/qual-e-a-musica-2-verso-autoria-alex-alves.png", autoria: "Alex Alves" },
+  { titulo: "Qual e a Musica 3", imagem: "imagens/qual-e-a-musica-3-autoria-alex-alves.png", verso: "imagens/qual-e-a-musica-3-verso-autoria-alex-alves.png", autoria: "Alex Alves" }
 ];
