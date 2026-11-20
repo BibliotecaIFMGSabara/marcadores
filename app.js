@@ -193,6 +193,107 @@
     toggle.setAttribute("aria-label", "Ver verso do marcador");
     let showingBack = false;
 
+    // A sombra não gira junto com o marcador. Ela acompanha o ângulo do
+    // giro como se o marcador estivesse se afastando da superfície:
+    // 0°/180° = sombra normal; 90° = maior distância aparente.
+    const FLIP_DURATION = 900;
+    const EASING = { x1: 0.2, y1: 0.68, x2: 0.25, y2: 1 };
+    let shadowAngle = 0;
+    let shadowAnimationFrame = null;
+    let shadowAnimationStart = 0;
+    let shadowAnimationStartAngle = 0;
+    let shadowAnimationTargetAngle = 0;
+
+    function cubicBezierCoordinate(t, a, b) {
+      const mt = 1 - t;
+      return 3 * mt * mt * t * a + 3 * mt * t * t * b + t * t * t;
+    }
+
+    function easedProgress(t) {
+      if (t <= 0) return 0;
+      if (t >= 1) return 1;
+
+      let low = 0;
+      let high = 1;
+      for (let i = 0; i < 14; i += 1) {
+        const middle = (low + high) / 2;
+        const x = cubicBezierCoordinate(middle, EASING.x1, EASING.x2);
+        if (x < t) low = middle;
+        else high = middle;
+      }
+      const u = (low + high) / 2;
+      return cubicBezierCoordinate(u, EASING.y1, EASING.y2);
+    }
+
+    function applyShadowAngle(angle) {
+      if (!shadowImage) return;
+      shadowAngle = Math.max(0, Math.min(180, angle));
+      const lift = Math.max(0, Math.sin(shadowAngle * Math.PI / 180));
+
+      // O efeito de hover continua sendo a base. Durante o giro acrescentamos
+      // apenas um pequeno afastamento progressivo, chegando ao máximo no meio.
+      shadowImage.style.setProperty("--shadow-flip-scale", (1 + lift * 0.045).toFixed(4));
+      shadowImage.style.setProperty("--shadow-flip-y", (lift * 1.25).toFixed(3) + "%");
+      shadowImage.style.setProperty(
+        "--shadow-flip-blur",
+        lift < 0.001
+          ? "0px"
+          : "clamp(" +
+            (2 * lift).toFixed(3) + "px, " +
+            (1.33 * lift).toFixed(3) + "cqw, " +
+            (4 * lift).toFixed(3) + "px)"
+      );
+    }
+
+    function getAnimatedShadowAngle(now) {
+      if (shadowAnimationFrame === null) return shadowAngle;
+      const elapsed = Math.max(0, Math.min(1, (now - shadowAnimationStart) / FLIP_DURATION));
+      const progress = easedProgress(elapsed);
+      return shadowAnimationStartAngle +
+        (shadowAnimationTargetAngle - shadowAnimationStartAngle) * progress;
+    }
+
+    function animateShadowTo(targetAngle) {
+      if (!shadowImage) return;
+
+      if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+        if (shadowAnimationFrame !== null) cancelAnimationFrame(shadowAnimationFrame);
+        shadowAnimationFrame = null;
+        shadowAngle = targetAngle;
+        applyShadowAngle(targetAngle);
+        return;
+      }
+
+      const now = performance.now();
+      if (shadowAnimationFrame !== null) {
+        shadowAngle = getAnimatedShadowAngle(now);
+        cancelAnimationFrame(shadowAnimationFrame);
+        shadowAnimationFrame = null;
+      }
+
+      shadowAnimationStart = now;
+      shadowAnimationStartAngle = shadowAngle;
+      shadowAnimationTargetAngle = targetAngle;
+
+      const tick = currentTime => {
+        const elapsed = Math.max(0, Math.min(1, (currentTime - shadowAnimationStart) / FLIP_DURATION));
+        const progress = easedProgress(elapsed);
+        const angle = shadowAnimationStartAngle +
+          (shadowAnimationTargetAngle - shadowAnimationStartAngle) * progress;
+        applyShadowAngle(angle);
+
+        if (elapsed < 1) {
+          shadowAnimationFrame = requestAnimationFrame(tick);
+        } else {
+          shadowAngle = shadowAnimationTargetAngle;
+          shadowAnimationFrame = null;
+          applyShadowAngle(shadowAngle);
+        }
+      };
+
+      shadowAnimationFrame = requestAnimationFrame(tick);
+    }
+
     function showSide(back) {
       showingBack = back;
       wrapper.classList.toggle("is-flipped", back);
@@ -203,6 +304,8 @@
       frontButton.setAttribute("aria-hidden", String(back));
       backButton.setAttribute("aria-hidden", String(!back));
       toggle.setAttribute("aria-label", back ? "Ver frente do marcador" : "Ver verso do marcador");
+
+      animateShadowTo(back ? 180 : 0);
     }
 
     toggle.addEventListener("click", () => showSide(!showingBack));
