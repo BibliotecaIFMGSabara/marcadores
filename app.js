@@ -174,9 +174,13 @@
       wrapper.appendChild(shadow);
     }
 
+    const scene = document.createElement("div");
+    scene.className = "marker-3d-scene";
+    wrapper.appendChild(scene);
+
     const flipper = document.createElement("div");
     flipper.className = "marker-flip-inner";
-    wrapper.appendChild(flipper);
+    scene.appendChild(flipper);
     flipper.append(frontButton, backButton);
 
     frontButton.classList.add("is-active");
