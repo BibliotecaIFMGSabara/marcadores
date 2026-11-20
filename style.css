@@ -534,6 +534,17 @@ h1 em, h2 em, h3 em { color: var(--coral); font-family: var(--serif); font-weigh
   background: rgba(32,34,31,.82); color: var(--paper); font-size: 7px; font-weight: 700;
   letter-spacing: 1.2px; text-transform: uppercase;
 }
+
+/* A etiqueta acompanha a borda externa de cada face durante o giro:
+   frente à esquerda e verso à direita. */
+.product-image-wrap.has-verso .product-side:first-child > span {
+  left:12px;
+  right:auto;
+}
+.product-image-wrap.has-verso .product-side:nth-child(2) > span {
+  left:auto;
+  right:12px;
+}
 .product-meta { padding:13px 14px 15px; display:flex; flex-direction:column; align-items:stretch; gap:6px; }
 .product-title-line { display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
 .product-name { min-width:0; font-family:var(--serif); font-size:17px; line-height:1.2; }
