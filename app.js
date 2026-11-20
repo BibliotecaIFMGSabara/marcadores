@@ -260,10 +260,10 @@
 
       // O efeito de hover continua sendo a base. Durante o giro acrescentamos
       // afastamento progressivo e estreitamos horizontalmente a sombra conforme
-      // o marcador fica de perfil. No meio do giro ela mantém apenas 14% da largura,
-      // evitando que desapareça completamente por causa do desfoque.
+      // o marcador fica de perfil. No meio do giro ela fica quase invisível,
+      // mantendo só 2% da largura para não desaparecer de forma abrupta.
       const horizontalScale = Math.max(
-        0.14,
+        0.02,
         Math.abs(Math.cos(shadowAngle * Math.PI / 180))
       );
       shadowImage.style.setProperty("--shadow-flip-scale", (1 + lift * 0.045).toFixed(4));
