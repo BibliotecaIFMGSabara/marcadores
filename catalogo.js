@@ -134,5 +134,6 @@ window.MARCADORES = [
   { titulo: "Piquenique", imagem: "imagens/piquenique.png" },
   { titulo: "Qual e a Musica 1", imagem: "imagens/qual-e-a-musica-1-autoria-alex-alves.png", verso: "imagens/qual-e-a-musica-1-verso-autoria-alex-alves.png", autoria: "Alex Alves" },
   { titulo: "Qual e a Musica 2", imagem: "imagens/qual-e-a-musica-2-autoria-alex-alves.png", verso: "imagens/qual-e-a-musica-2-verso-autoria-alex-alves.png", autoria: "Alex Alves" },
-  { titulo: "Qual e a Musica 3", imagem: "imagens/qual-e-a-musica-3-autoria-alex-alves.png", verso: "imagens/qual-e-a-musica-3-verso-autoria-alex-alves.png", autoria: "Alex Alves" }
+  { titulo: "Qual e a Musica 3", imagem: "imagens/qual-e-a-musica-3-autoria-alex-alves.png", verso: "imagens/qual-e-a-musica-3-verso-autoria-alex-alves.png", autoria: "Alex Alves" },
+  { titulo: "Maria 2", imagem: "imagens/maria-2.jpg" }
 ];
