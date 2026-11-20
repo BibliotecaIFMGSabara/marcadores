@@ -10,6 +10,7 @@
   const loadMoreButton = document.getElementById("gallery-more");
   const dialog = document.getElementById("image-dialog");
   const dialogImage = document.getElementById("dialog-image");
+  const dialogImageGloss = document.getElementById("dialog-image-gloss");
   const dialogTitle = document.getElementById("dialog-title");
   const featuredStage = document.getElementById("featured-marker-stage");
   const featuredTitle = document.getElementById("featured-marker-title");
@@ -161,14 +162,23 @@
       : total + " MARCADORES NA COLEÇÃO";
   }
 
-  function openImage(src, title, side) {
+  function openImage(src, title, side, glossMask) {
     dialogImage.src = src;
     dialogImage.alt = title + (side ? " — " + side : "");
     dialogTitle.textContent = title + (side ? " · " + side : "");
+    if (dialogImageGloss) {
+      const showGloss = Boolean(glossMask && side !== "verso");
+      dialogImageGloss.hidden = !showGloss;
+      if (showGloss) {
+        dialogImageGloss.style.setProperty("--gloss-mask", "url(" + JSON.stringify(glossMask) + ")");
+      } else {
+        dialogImageGloss.style.removeProperty("--gloss-mask");
+      }
+    }
     if (typeof dialog.showModal === "function") dialog.showModal();
   }
 
-  function addImage(parent, src, title, side) {
+  function addImage(parent, src, title, side, glossMask) {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "product-side";
@@ -181,11 +191,19 @@
 
     button.appendChild(img);
 
+    if (glossMask) {
+      const gloss = document.createElement("div");
+      gloss.className = "marker-gloss";
+      gloss.setAttribute("aria-hidden", "true");
+      gloss.style.setProperty("--gloss-mask", "url(" + JSON.stringify(glossMask) + ")");
+      button.appendChild(gloss);
+    }
+
     const label = document.createElement("span");
     label.textContent = side || "frente";
     button.appendChild(label);
 
-    button.addEventListener("click", () => openImage(src, title, side));
+    button.addEventListener("click", () => openImage(src, title, side, glossMask));
     parent.appendChild(button);
     return button;
   }
@@ -423,7 +441,7 @@
     const imageWrap = document.createElement("div");
     imageWrap.className = marker.verso ? "product-image-wrap has-verso" : "product-image-wrap";
     addSelectionControl(imageWrap, marker);
-    const frontButton = addImage(imageWrap, marker.imagem, marker.titulo, "frente");
+    const frontButton = addImage(imageWrap, marker.imagem, marker.titulo, "frente", marker.brilho);
     if (marker.verso) {
       const backButton = addImage(imageWrap, marker.verso, marker.titulo, "verso");
       setupMobileFlip(imageWrap, frontButton, backButton);
@@ -482,7 +500,7 @@
     wrapper.className = "product-image-wrap has-verso featured-marker-image";
     wrapper.setAttribute("aria-label", "Marcador " + marker.titulo + " em destaque");
 
-    const frontButton = addImage(wrapper, marker.imagem, marker.titulo, "frente");
+    const frontButton = addImage(wrapper, marker.imagem, marker.titulo, "frente", marker.brilho);
     const backButton = addImage(wrapper, marker.verso, marker.titulo, "verso");
     frontButton.querySelector("img").loading = "eager";
     backButton.querySelector("img").loading = "eager";
@@ -585,7 +603,8 @@
         imagem: front.download_url,
         verso: verso ? verso.download_url : null,
         autoria: catalogEntry.autoria || filenameMetadata.autoria || "",
-        autorUrl: catalogEntry.autorUrl || filenameMetadata.autorUrl || ""
+        autorUrl: catalogEntry.autorUrl || filenameMetadata.autorUrl || "",
+        brilho: catalogEntry.brilho || ""
       });
       used.add(front.name);
       if (verso) used.add(verso.name);
@@ -604,7 +623,8 @@
         imagem: file.download_url,
         verso: null,
         autoria: catalogEntry.autoria || filenameMetadata.autoria || "",
-        autorUrl: catalogEntry.autorUrl || filenameMetadata.autorUrl || ""
+        autorUrl: catalogEntry.autorUrl || filenameMetadata.autorUrl || "",
+        brilho: catalogEntry.brilho || ""
       });
     });
     collectionMarkers = markers;
