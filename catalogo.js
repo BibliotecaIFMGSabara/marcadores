@@ -105,5 +105,20 @@ window.MARCADORES = [
   { titulo: "Qual á a Música 1", imagem: "imagens/qual-e-a-musica-1-autoria-alex-alves.png", verso: "imagens/qual-e-a-musica-1-verso-autoria-alex-alves.png", autoria: "Alex Alves" },
   { titulo: "Qual á a Música 2", imagem: "imagens/qual-e-a-musica-2-autoria-alex-alves.png", verso: "imagens/qual-e-a-musica-2-verso-autoria-alex-alves.png", autoria: "Alex Alves" },
   { titulo: "Qual á a Música 3", imagem: "imagens/qual-e-a-musica-3-autoria-alex-alves.png", verso: "imagens/qual-e-a-musica-3-verso-autoria-alex-alves.png", autoria: "Alex Alves" },
-  { titulo: "Maria 2", imagem: "imagens/maria-2.jpg" }
+  { titulo: "Maria 2", imagem: "imagens/maria-2.jpg" },
+  { titulo: "Cada Traço", imagem: "imagens/cada-traço-autoria-lavínia.png", autoria: "Lavínia" },
+  { titulo: "Caçador de Mim", imagem: "imagens/caçador-de-mim-autoria-max.png", verso: "imagens/caçador-de-mim-verso-autoria-max.png", autoria: "Max" },
+  { titulo: "Death", imagem: "imagens/death-autoria-max.png", verso: "imagens/death-verso-autoria-max.png", autoria: "Max" },
+  { titulo: "Jovens Titãs 1", imagem: "imagens/jovens-titãs-1-autoria-lavínia.png", autoria: "Lavínia" },
+  { titulo: "Jovens Titãs 2", imagem: "imagens/jovens-titãs-2-autoria-lavínia.png", autoria: "Lavínia" },
+  { titulo: "Jovens Titãs 3", imagem: "imagens/jovens-titãs-3-autoria-lavínia.png", autoria: "Lavínia" },
+  { titulo: "Leitura", imagem: "imagens/leitura-autoria-lavínia.png", autoria: "Lavínia" },
+  { titulo: "Nuvenzinha Brilhante Rihanna Kathleen", imagem: "imagens/nuvenzinha-brilhante-rihanna-kathleen.png", verso: "imagens/nuvenzinha-brilhante-verso-rihanna-kathleen.png" },
+  { titulo: "Peixinhos", imagem: "imagens/peixinhos-autoria-bárbara-fantoni.png", autoria: "Bárbara Fantoni" },
+  { titulo: "Retinta Beleza", imagem: "imagens/retinta-beleza-autoria-cíntia-amorim-link-cintiaamorim.com.png", autoria: "Cíntia Amorim" },
+  { titulo: "Sayaka Miki Artificial Angels Pray", imagem: "imagens/sayaka-miki-artificial-angels-pray-autoria-max.png", verso: "imagens/sayaka-miki-artificial-angels-pray-verso-autoria-max.png", autoria: "Max" },
+  { titulo: "Vidas Negras Importam", imagem: "imagens/vidas-negras-importam-autoria-lavínia.png", autoria: "Lavínia" },
+  { titulo: "Yin Yang", imagem: "imagens/yin-yang-autoria-thalita-karolaine.png", autoria: "Thalita Karolaine" },
+  { titulo: "Yin Yang Complemento", imagem: "imagens/yin-yang-complemento-autoria-thalita-karolaine.png", autoria: "Thalita Karolaine" },
+  { titulo: "Yokai Watch Punk Tactics", imagem: "imagens/yokai-watch-punk-tactics-autoria-max.png", verso: "imagens/yokai-watch-punk-tactics-verso-autoria-max.png", autoria: "Max" }
 ];
