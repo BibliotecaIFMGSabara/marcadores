@@ -146,18 +146,18 @@ class AtualizarCatalogoTests(unittest.TestCase):
 
     def test_atualiza_verso_quando_a_imagem_referenciada_foi_renomeada(self):
         catalogo = '''window.MARCADORES = [
-  { titulo: "Marcador", imagem: "imagens/marcador.jpg", verso: "imagens/marcador-verso-antigo.jpg" }
+  { titulo: "Marcador", imagem: "imagens/marcador.jpg", verso: "imagens/marcador-verso.jpg" }
 ];
 '''
         imagens = [
             "imagens/marcador.jpg",
-            "imagens/marcador-verso-novo.jpg",
+            "imagens/marcador-verso.png",
         ]
 
         atualizado, resumo = atualizar_catalogo(catalogo, imagens)
 
-        self.assertIn('verso: "imagens/marcador-verso-novo.jpg"', atualizado)
-        self.assertNotIn("marcador-verso-antigo.jpg", atualizado)
+        self.assertIn('verso: "imagens/marcador-verso.png"', atualizado)
+        self.assertNotIn("marcador-verso.jpg", atualizado)
         self.assertEqual(resumo["versos_atualizados"], 1)
 
     def test_remove_verso_quando_a_imagem_referenciada_nao_existe_mais(self):
