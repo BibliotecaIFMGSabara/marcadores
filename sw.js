@@ -1,4 +1,4 @@
-const CACHE_NAME = "entrelinhas-v15";
+const CACHE_NAME = "entrelinhas-v16";
 const SHELL = ["./", "./index.html", "./style.css", "./app.js", "./catalogo.js", "./favicon.svg", "./manifest.webmanifest", "./icons/icon-192.svg", "./icons/icon-512.svg", "./efeitos/nuvenzinha-brilhante-mascara.svg", "./efeitos/nuvenzinha-brilhante-mascara-diagonal.png"];
 
 self.addEventListener("install", event => {
