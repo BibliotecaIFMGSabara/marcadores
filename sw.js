@@ -1,4 +1,4 @@
-const CACHE_NAME = "entrelinhas-v9";
+const CACHE_NAME = "entrelinhas-v10";
 const SHELL = ["./", "./index.html", "./style.css", "./app.js", "./catalogo.js", "./favicon.svg", "./manifest.webmanifest", "./icons/icon-192.svg", "./icons/icon-512.svg"];
 
 self.addEventListener("install", event => {
@@ -13,6 +13,19 @@ self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
   const url = new URL(event.request.url);
   if (url.origin === self.location.origin) {
+    if (url.pathname.endsWith("/catalogo.js")) {
+      // O catálogo muda automaticamente sem uma nova versão do service worker.
+      // Buscamos a versão atual na rede e usamos o cache somente se estiver offline.
+      event.respondWith(fetch(event.request).then(response => {
+        if (response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+        }
+        return response;
+      }).catch(() => caches.match(event.request)));
+      return;
+    }
+
     event.respondWith(caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
       const copy = response.clone();
       caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));

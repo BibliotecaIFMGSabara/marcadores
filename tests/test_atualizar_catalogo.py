@@ -74,6 +74,61 @@ class AtualizarCatalogoTests(unittest.TestCase):
         self.assertEqual(resumo["adicionados"], 1)
 
 
+    def test_reconhece_verso_antes_da_autoria(self):
+        catalogo = "window.MARCADORES = [\\n];\\n"
+        frente = "imagens/qual-e-a-musica-4-autoria-alex-alves.png"
+        verso = "imagens/qual-e-a-musica-4-verso-autoria-alex-alves.png"
+
+        atualizado, resumo = atualizar_catalogo(
+            catalogo,
+            [frente, verso],
+            [frente, verso],
+        )
+
+        self.assertIn('titulo: "Qual e a Musica 4"', atualizado)
+        self.assertIn('imagem: "imagens/qual-e-a-musica-4-autoria-alex-alves.png"', atualizado)
+        self.assertIn('verso: "imagens/qual-e-a-musica-4-verso-autoria-alex-alves.png"', atualizado)
+        self.assertIn('autoria: "Alex Alves"', atualizado)
+        self.assertNotIn('titulo: "Qual e a Musica 4 Verso"', atualizado)
+        self.assertEqual(resumo["adicionados"], 1)
+
+    def test_reconhece_verso_depois_da_autoria(self):
+        catalogo = "window.MARCADORES = [\\n];\\n"
+        frente = "imagens/qual-e-a-musica-4-autoria-alex-alves.png"
+        verso = "imagens/qual-e-a-musica-4-autoria-alex-alves-verso.png"
+
+        atualizado, resumo = atualizar_catalogo(
+            catalogo,
+            [frente, verso],
+            [frente, verso],
+        )
+
+        self.assertIn('titulo: "Qual e a Musica 4"', atualizado)
+        self.assertIn('verso: "imagens/qual-e-a-musica-4-autoria-alex-alves-verso.png"', atualizado)
+        self.assertIn('autoria: "Alex Alves"', atualizado)
+        self.assertNotIn('titulo: "Qual e a Musica 4 Verso"', atualizado)
+        self.assertEqual(resumo["adicionados"], 1)
+
+    def test_mescla_registro_de_verso_que_ja_estava_separado(self):
+        catalogo = '''window.MARCADORES = [
+  { titulo: "Qual e a Musica 4", imagem: "imagens/qual-e-a-musica-4-autoria-alex-alves.png", autoria: "Alex Alves" },
+  { titulo: "Qual e a Musica 4 Verso", imagem: "imagens/qual-e-a-musica-4-verso-autoria-alex-alves.png", autoria: "Alex Alves" }
+];
+'''
+        frente = "imagens/qual-e-a-musica-4-autoria-alex-alves.png"
+        verso = "imagens/qual-e-a-musica-4-verso-autoria-alex-alves.png"
+
+        atualizado, resumo = atualizar_catalogo(
+            catalogo,
+            [frente, verso],
+            [frente, verso],
+        )
+
+        self.assertIn('verso: "imagens/qual-e-a-musica-4-verso-autoria-alex-alves.png"', atualizado)
+        self.assertEqual(atualizado.count('imagem: "imagens/'), 1)
+        self.assertNotIn('titulo: "Qual e a Musica 4 Verso"', atualizado)
+        self.assertEqual(resumo["registros_de_verso_mesclados"], 1)
+
     def test_reconhece_autoria_e_link_no_nome_do_arquivo(self):
         catalogo = "window.MARCADORES = [\n];\n"
         imagem = (

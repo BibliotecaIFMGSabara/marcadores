@@ -5,8 +5,11 @@ Convenção recomendada:
   nome-do-marcador.jpg
   nome-do-marcador-verso.jpg
   nome-do-marcador-autoria-Nome-Sobrenome.jpg
+  nome-do-marcador-verso-autoria-Nome-Sobrenome.jpg
+  nome-do-marcador-autoria-Nome-Sobrenome-verso.jpg
   nome-do-marcador-autoria-Nome-Sobrenome-link-URL-codificada.jpg
 
+O token -verso- identifica o verso mesmo quando aparece antes ou depois da autoria.
 O sufixo -autoria- separa o crédito; -link- recebe uma URL codificada.
 A automação preenche apenas campos ausentes ou vazios e preserva dados manuais.
 Também corrige títulos antigos gerados automaticamente quando continham os sufixos.
@@ -61,6 +64,18 @@ def normalize_path(value: str) -> str:
     return Path(value.replace("\\", "/")).as_posix().casefold()
 
 
+def split_side_marker(stem: str) -> tuple[str, str]:
+    """Remove o token -verso- ou -frente- em qualquer posição do nome-base."""
+    match = re.search(r"(?:^|[-_])(verso|frente)(?=$|[-_])", stem, flags=re.IGNORECASE)
+    if not match:
+        return re.sub(r"[-_]+", "-", stem).strip("-"), ""
+
+    prefix = stem[:match.start()].rstrip("-_")
+    suffix = stem[match.end():].lstrip("-_")
+    base = "-".join(part for part in (prefix, suffix) if part)
+    return re.sub(r"[-_]+", "-", base).strip("-"), match.group(1).casefold()
+
+
 def humanize_metadata_text(value: str) -> str:
     """Converte hífens e sublinhados em espaços, preservando nomes já formatados."""
     text = re.sub(r"[_-]+", " ", value).strip()
@@ -82,8 +97,7 @@ def humanize_metadata_text(value: str) -> str:
 
 def parse_filename_metadata(filename: str) -> dict[str, str]:
     """Lê os sufixos -autoria-Nome e -link-URL codificada no nome do arquivo."""
-    stem = Path(filename).stem
-    stem = re.sub(r"-(verso|frente)$", "", stem, flags=re.IGNORECASE)
+    stem, _ = split_side_marker(Path(filename).stem)
     markers = list(re.finditer(r"-(autoria|link)-", stem, flags=re.IGNORECASE))
     title = stem[:markers[0].start()] if markers else stem
     metadata = {"titulo": title}
@@ -134,8 +148,7 @@ def humanize_title(filename: str) -> str:
 
 def legacy_humanize_title(filename: str) -> str:
     """Reproduz o título gerado pela versão anterior do workflow."""
-    stem = Path(filename).stem
-    stem = re.sub(r"-(verso|frente)$", "", stem, flags=re.IGNORECASE)
+    stem, _ = split_side_marker(Path(filename).stem)
     stem = re.sub(
         r"([a-záàâãéêíóôõúç])([A-ZÁÀÂÃÉÊÍÓÔÕÚÇ])",
         r"\1 \2",
@@ -214,26 +227,61 @@ def find_image_by_stem(stem: str, by_name: dict[str, str]) -> str | None:
     return None
 
 
+def find_front_by_base(base: str, by_name: dict[str, str], preferred_extension: str | None = None) -> str | None:
+    candidates = []
+    extension_order = {".jpg": 0, ".jpeg": 1, ".png": 2, ".webp": 3}
+    for candidate in by_name.values():
+        candidate_base, side = split_side_marker(Path(candidate).stem)
+        if candidate_base.casefold() == base.casefold() and side != "verso":
+            candidates.append(candidate)
+
+    if not candidates:
+        return None
+
+    return min(
+        candidates,
+        key=lambda candidate: (
+            Path(candidate).suffix.casefold() != (preferred_extension or "").casefold(),
+            split_side_marker(Path(candidate).stem)[1] == "frente",
+            extension_order.get(Path(candidate).suffix.casefold(), 99),
+            candidate.casefold(),
+        ),
+    )
+
+
 def front_for_changed_image(path: str, by_name: dict[str, str]) -> str | None:
     filename = Path(path).name
-    stem = Path(filename).stem
+    base, side = split_side_marker(Path(filename).stem)
 
-    if re.search(r"-verso$", stem, flags=re.IGNORECASE):
-        base = re.sub(r"-verso$", "", stem, flags=re.IGNORECASE)
-        # O app associa nome-verso apenas a uma frente chamada nome.ext.
-        return find_image_by_stem(base, by_name)
-
-    if re.search(r"-frente$", stem, flags=re.IGNORECASE):
-        base = re.sub(r"-frente$", "", stem, flags=re.IGNORECASE)
-        plain_front = find_image_by_stem(base, by_name)
-        return plain_front or by_name.get(filename.casefold())
+    if side in {"verso", "frente"}:
+        return find_front_by_base(base, by_name, Path(filename).suffix) or (
+            by_name.get(filename.casefold()) if side == "frente" else None
+        )
 
     return by_name.get(filename.casefold())
 
 
 def find_verso(front_path: str, by_name: dict[str, str]) -> str | None:
-    stem = Path(front_path).stem
-    return find_image_by_stem(stem + "-verso", by_name)
+    base, _ = split_side_marker(Path(front_path).stem)
+    preferred_extension = Path(front_path).suffix.casefold()
+    extension_order = {".jpg": 0, ".jpeg": 1, ".png": 2, ".webp": 3}
+    candidates = []
+    for candidate in by_name.values():
+        candidate_base, side = split_side_marker(Path(candidate).stem)
+        if candidate_base.casefold() == base.casefold() and side == "verso":
+            candidates.append(candidate)
+
+    if not candidates:
+        return None
+
+    return min(
+        candidates,
+        key=lambda candidate: (
+            Path(candidate).suffix.casefold() != preferred_extension,
+            extension_order.get(Path(candidate).suffix.casefold(), 99),
+            candidate.casefold(),
+        ),
+    )
 
 
 def upsert_string_field(entry_object: str, field_name: str, value: str) -> tuple[str, bool]:
@@ -289,8 +337,16 @@ def atualizar_catalogo(
         front = front_for_changed_image(changed, by_name)
         if front:
             fronts.add(front)
-        elif re.search(r"-verso\.(jpe?g|png|webp)$", changed, flags=re.IGNORECASE):
+        elif split_side_marker(Path(changed).stem)[1] == "verso":
             ignored_versos += 1
+
+    # Também migra registros antigos que cadastraram o verso como marcador separado.
+    for entry in entries:
+        base, side = split_side_marker(Path(entry["imagem"]).stem)
+        if side == "verso":
+            front = find_front_by_base(base, by_name)
+            if front:
+                fronts.add(front)
 
     replacements = []
     new_records = []
@@ -352,8 +408,56 @@ def atualizar_catalogo(
             "autorUrl": filename_metadata.get("autorUrl", ""),
         }
     
+    # Remove do catálogo os registros independentes de verso quando a frente
+    # correspondente existe; a imagem passa a ser referenciada no campo "verso".
+    removed_verse_keys = set()
+    front_keys = {normalize_path(front) for front in fronts}
+    for entry in entries:
+        base, side = split_side_marker(Path(entry["imagem"]).stem)
+        if side != "verso":
+            continue
+        front = find_front_by_base(base, by_name)
+        if not front:
+            continue
+        front_key = normalize_path(front)
+        front_entry = catalog_by_image.get(front_key)
+        if front_key not in front_keys and not front_entry:
+            continue
+        verse_key = normalize_path(entry["imagem"])
+        if front_entry and front_entry["verso"] and normalize_path(front_entry["verso"]) != verse_key:
+            continue
+        removed_verse_keys.add(verse_key)
+
+    operations = [(start, end, replacement) for start, end, replacement in replacements]
+    removed_indexes = [
+        index for index, entry in enumerate(entries)
+        if normalize_path(entry["imagem"]) in removed_verse_keys
+    ]
+    if removed_indexes:
+        runs = []
+        run_start = run_end = removed_indexes[0]
+        for index in removed_indexes[1:]:
+            if index == run_end + 1:
+                run_end = index
+            else:
+                runs.append((run_start, run_end))
+                run_start = run_end = index
+        runs.append((run_start, run_end))
+
+        for first, last in runs:
+            if last + 1 < len(entries):
+                remove_start = entries[first]["start"]
+                remove_end = entries[last + 1]["start"]
+            elif first > 0:
+                remove_start = entries[first - 1]["end"]
+                remove_end = entries[last]["end"]
+            else:
+                remove_start = entries[first]["start"]
+                remove_end = entries[last]["end"]
+            operations.append((remove_start, remove_end, ""))
+
     updated = catalog
-    for start, end, replacement in sorted(replacements, reverse=True):
+    for start, end, replacement in sorted(operations, key=lambda item: item[0], reverse=True):
         updated = updated[:start] + replacement + updated[end:]
 
     if new_records:
@@ -372,6 +476,7 @@ def atualizar_catalogo(
         "versos_associados": linked_versos,
         "metadados_atualizados": metadata_updated,
         "titulos_corrigidos": titles_corrected,
+        "registros_de_verso_mesclados": len(removed_verse_keys),
         "versos_sem_frente": ignored_versos,
     }
 
@@ -426,6 +531,10 @@ def main() -> int:
 
     if args.git_diff:
         changed_paths = changed_images_from_git(*args.git_diff)
+        if not changed_paths:
+            # Uma execução disparada por mudança no script/testes também reconcilia
+            # registros antigos do catálogo, mesmo sem novas imagens no commit.
+            changed_paths = None
     elif args.paths:
         changed_paths = args.paths
     else:

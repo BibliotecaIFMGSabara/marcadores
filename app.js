@@ -63,11 +63,25 @@
     "um", "uma", "uns", "umas"
   ]);
 
+  function splitSideMarker(value) {
+    const parts = String(value || "").split(/[-_]/);
+    const index = parts.findIndex(part => /^(verso|frente)$/i.test(part));
+    if (index < 0) {
+      return {
+        base: parts.filter(Boolean).join("-"),
+        side: ""
+      };
+    }
+    const side = parts[index].toLowerCase();
+    parts.splice(index, 1);
+    return {
+      base: parts.filter(Boolean).join("-"),
+      side
+    };
+  }
+
   function humanizeTitle(value) {
-    let title = String(value || "")
-      .replace(/\.[^.]+$/, "")
-      .replace(/-verso$/i, "")
-      .replace(/-frente$/i, "")
+    let title = splitSideMarker(String(value || "").replace(/\.[^.]+$/, "")).base
       .replace(/([a-záàâãéêíóôõúç])([A-ZÁÀÂÃÉÊÍÓÔÕÚÇ])/g, "$1 $2")
       .replace(/([A-Za-zÁÀÂÃÉÊÍÓÔÕÚÇáàâãéêíóôõúç])(\d)/g, "$1 $2")
       .replace(/(\d)([A-Za-zÁÀÂÃÉÊÍÓÔÕÚÇáàâãéêíóôõúç])/g, "$1 $2")
@@ -108,9 +122,7 @@
   }
 
   function parseFilenameMetadata(filename) {
-    const stem = String(filename || "")
-      .replace(/\.[^.]+$/, "")
-      .replace(/-(verso|frente)$/i, "");
+    const stem = splitSideMarker(String(filename || "").replace(/\.[^.]+$/, "")).base;
     const markerPattern = /-(autoria|link)-/ig;
     const matches = Array.from(stem.matchAll(markerPattern));
     const titlePart = matches.length ? stem.slice(0, matches[0].index) : stem;
@@ -516,23 +528,49 @@
     const images = files
       .filter(file => file.type === "file" && IMAGE_EXTENSIONS.test(file.name))
       .sort((a, b) => a.name.localeCompare(b.name, "pt-BR", { numeric: true, sensitivity: "base" }));
-    const byName = new Map(images.map(file => [file.name.toLowerCase(), file]));
+    const imageInfo = new Map();
+    const filesByBase = new Map();
+    images.forEach(file => {
+      const stem = file.name.replace(/\.(jpe?g|png|webp)$/i, "");
+      const parsed = splitSideMarker(stem);
+      const info = { file, base: parsed.base, side: parsed.side };
+      imageInfo.set(file.name.toLowerCase(), info);
+      const key = parsed.base.toLowerCase();
+      if (!filesByBase.has(key)) filesByBase.set(key, []);
+      filesByBase.get(key).push(info);
+    });
     const catalogByImage = new Map((Array.isArray(window.MARCADORES) ? window.MARCADORES : [])
       .map(marker => [String(marker.imagem || "").split("/").pop().toLowerCase(), marker]));
     const markers = [];
     const used = new Set();
 
     images.forEach(file => {
-      if (used.has(file.name) || /-verso\.(jpe?g|png|webp)$/i.test(file.name)) return;
-      let front = file;
-      let baseName = file.name.replace(/\.(jpe?g|png|webp)$/i, "");
-      if (/-frente$/i.test(baseName)) {
-        const cleanBase = baseName.replace(/-frente$/i, "");
-        const plain = [".jpg", ".jpeg", ".png", ".webp"].map(ext => byName.get((cleanBase + ext).toLowerCase())).find(Boolean);
-        if (plain) { front = plain; baseName = cleanBase; used.add(file.name); }
+      const info = imageInfo.get(file.name.toLowerCase());
+      if (used.has(file.name)) return;
+      if (info.side === "verso") {
+        // Um verso sem frente correspondente não deve virar um cartão independente.
+        used.add(file.name);
+        return;
       }
-      const verso = [".jpg", ".jpeg", ".png", ".webp"]
-        .map(ext => byName.get((baseName + "-verso" + ext).toLowerCase())).find(Boolean);
+
+      let front = file;
+      if (info.side === "frente") {
+        const siblings = filesByBase.get(info.base.toLowerCase()) || [];
+        const plain = siblings.find(item => !item.side);
+        if (plain) {
+          if (used.has(plain.file.name)) {
+            used.add(file.name);
+            return;
+          }
+          front = plain.file;
+          used.add(file.name);
+        }
+      }
+
+      const frontInfo = imageInfo.get(front.name.toLowerCase());
+      const siblings = filesByBase.get(frontInfo.base.toLowerCase()) || [];
+      const versoInfo = siblings.find(item => item.side === "verso");
+      const verso = versoInfo ? versoInfo.file : null;
       const catalogEntry = catalogByImage.get(front.name.toLowerCase()) || {};
       const filenameMetadata = parseFilenameMetadata(front.name);
       markers.push({
@@ -547,6 +585,11 @@
     });
     images.forEach(file => {
       if (used.has(file.name)) return;
+      const info = imageInfo.get(file.name.toLowerCase());
+      if (info.side === "verso") {
+        used.add(file.name);
+        return;
+      }
       const catalogEntry = catalogByImage.get(file.name.toLowerCase()) || {};
       const filenameMetadata = parseFilenameMetadata(file.name);
       markers.push({
