@@ -113,5 +113,8 @@ window.MARCADORES = [
   { titulo: "Qual e a Musica 3", imagem: "imagens/qual-e-a-musica-3-autoria-alex-alves-small.png", autoria: "Alex Alves Small" },
   { titulo: "Qual e a Musica 3", imagem: "imagens/qual-e-a-musica-3-autoria-alex-alves-verso-small.png", autoria: "Alex Alves Verso Small" },
   { titulo: "Qual e a Musica 4", imagem: "imagens/qual-e-a-musica-4-autoria-alex-alves-small.png", autoria: "Alex Alves Small" },
-  { titulo: "Qual e a Musica 4", imagem: "imagens/qual-e-a-musica-4-autoria-alex-alves-verso-small.png", autoria: "Alex Alves Verso Small" }
+  { titulo: "Qual e a Musica 4", imagem: "imagens/qual-e-a-musica-4-autoria-alex-alves-verso-small.png", autoria: "Alex Alves Verso Small" },
+  { titulo: "Flores5", imagem: "imagens/flores5.png" },
+  { titulo: "Qual e a Musica 4", imagem: "imagens/qual-e-a-musica-4-autoria-alex-alves.png", autoria: "Alex Alves" },
+  { titulo: "Qual e a Musica 4 Verso", imagem: "imagens/qual-e-a-musica-4-verso-autoria-alex-alves.png", autoria: "Alex Alves" }
 ];
