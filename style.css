@@ -473,13 +473,21 @@ h1 em, h2 em, h3 em { color: var(--coral); font-family: var(--serif); font-weigh
   overflow:visible;
 }
 .product-image-wrap.has-verso .marker-shadow img {
+  --shadow-scale:1.06;
+  --shadow-y:3%;
+  --shadow-blur:clamp(6px, 4cqw, 14px);
+  --shadow-flip-scale:1;
+  --shadow-flip-y:0%;
+  --shadow-flip-blur:0px;
   width:100%;
   height:100%;
   display:block;
   object-fit:contain;
   opacity:.28;
-  filter:brightness(0) blur(clamp(6px, 4cqw, 14px));
-  transform:translateY(3%) scale(1.06);
+  filter:brightness(0) blur(calc(var(--shadow-blur) + var(--shadow-flip-blur)));
+  transform:
+    translateY(calc(var(--shadow-y) + var(--shadow-flip-y)))
+    scale(calc(var(--shadow-scale) * var(--shadow-flip-scale)));
   transform-origin:50% 50%;
 }
 .product-image-wrap.has-verso .marker-flip-inner {
@@ -1148,8 +1156,9 @@ a.product-author { color:var(--blue); text-decoration:underline; text-underline-
     filter .6s cubic-bezier(.2,.7,.2,1);
 }
 .product-image-wrap.has-verso:has(.marker-flip-inner .product-side:first-child:hover, .marker-flip-inner .product-side:nth-child(2):hover) .marker-shadow img {
-  transform:translateY(3.75%) scale(1.12);
-  filter:brightness(0) blur(clamp(7.32px, 4.88cqw, 17.08px));
+  --shadow-scale:1.12;
+  --shadow-y:3.75%;
+  --shadow-blur:clamp(7.32px, 4.88cqw, 17.08px);
 }
 @media (prefers-reduced-motion: reduce) {
   .product-image-wrap.has-verso .marker-flip-inner { transition:none !important; }
