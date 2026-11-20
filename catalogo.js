@@ -114,11 +114,11 @@ window.MARCADORES = [
   { titulo: "Jovens Titãs 3", imagem: "imagens/jovens-titãs-3-autoria-lavínia.png", autoria: "Lavínia" },
   { titulo: "Leitura", imagem: "imagens/leitura-autoria-lavínia.png", autoria: "Lavínia" },
   { titulo: "Peixinhos", imagem: "imagens/peixinhos-autoria-bárbara-fantoni.png", autoria: "Bárbara Fantoni" },
-  { titulo: "Retinta Beleza", imagem: "imagens/retinta-beleza-autoria-cíntia-amorim-link-cintiaamorim.com.png", autoria: "Cíntia Amorim" },
   { titulo: "Sayaka Miki Artificial Angels Pray", imagem: "imagens/sayaka-miki-artificial-angels-pray-autoria-max.png", verso: "imagens/sayaka-miki-artificial-angels-pray-verso-autoria-max.png", autoria: "Max" },
   { titulo: "Vidas Negras Importam", imagem: "imagens/vidas-negras-importam-autoria-lavínia.png", autoria: "Lavínia" },
   { titulo: "Yin Yang", imagem: "imagens/yin-yang-autoria-thalita-karolaine.png", autoria: "Thalita Karolaine" },
   { titulo: "Yin Yang Complemento", imagem: "imagens/yin-yang-complemento-autoria-thalita-karolaine.png", autoria: "Thalita Karolaine" },
   { titulo: "Yokai Watch Punk Tactics", imagem: "imagens/yokai-watch-punk-tactics-autoria-max.png", verso: "imagens/yokai-watch-punk-tactics-verso-autoria-max.png", autoria: "Max" },
-  { titulo: "Nuvenzinha Brilhante", imagem: "imagens/nuvenzinha-brilhante-autoria-rihanna-kathleen.png", autoria: "Rihanna Kathleen", verso: "imagens/nuvenzinha-brilhante-verso-autoria-rihanna-kathleen.png"}
+  { titulo: "Nuvenzinha Brilhante", imagem: "imagens/nuvenzinha-brilhante-autoria-rihanna-kathleen.png", autoria: "Rihanna Kathleen", verso: "imagens/nuvenzinha-brilhante-verso-autoria-rihanna-kathleen.png"},
+  { titulo: "Retinta Beleza", imagem: "imagens/retinta-beleza-autoria-cíntia-amorim.png", autoria: "Cíntia Amorim" }
 ];
