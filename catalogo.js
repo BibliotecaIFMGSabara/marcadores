@@ -59,7 +59,7 @@ window.MARCADORES = [
   { titulo: "Lua", imagem: "imagens/lua.jpg" },
   { titulo: "Luisa", imagem: "imagens/luisa.jpg" },
   { titulo: "Maria (2)", imagem: "imagens/maria (2).jpg" },
-  { titulo: "Maria", imagem: "imagens/maria.jpg" },
+  { titulo: "Maria", imagem: "imagens/maria.jpg", verso: "imagens/maria-verso.jpg"},
   { titulo: "Matemática", imagem: "imagens/matematica.jpg", autoria: "Lavinia" },
   { titulo: "Melancia", imagem: "imagens/melancia.jpg" },
   { titulo: "Menina Luisa", imagem: "imagens/menina-luisa.jpg", verso: "imagens/menina-luisa-verso.jpg", autoria: "Luisa Cordeiro" },
@@ -88,7 +88,6 @@ window.MARCADORES = [
   { titulo: "Touca", imagem: "imagens/touca.jpg" },
   { titulo: "Triangulos", imagem: "imagens/triangulos.jpg" },
   { titulo: "Um Dia De Cada Vez", imagem: "imagens/um-dia-de-cada-vez.jpg", verso: "imagens/um-dia-de-cada-vez-verso.jpg", autoria: "Elen" },
-  { titulo: "Ensolarado", imagem: "imagens/ensolarado-verso.jpg" },
   { titulo: "Totoro", imagem: "imagens/totoro.png" },
   { titulo: "Totoro1", imagem: "imagens/totoro1.png" },
   { titulo: "Amor", imagem: "imagens/amor-autoria-emelly-nicolly-small.png", autoria: "Emelly Nicolly Small" },
@@ -115,6 +114,12 @@ window.MARCADORES = [
   { titulo: "Qual e a Musica 4", imagem: "imagens/qual-e-a-musica-4-autoria-alex-alves-small.png", autoria: "Alex Alves Small" },
   { titulo: "Qual e a Musica 4", imagem: "imagens/qual-e-a-musica-4-autoria-alex-alves-verso-small.png", autoria: "Alex Alves Verso Small" },
   { titulo: "Flores5", imagem: "imagens/flores5.png" },
-  { titulo: "Qual e a Musica 4", imagem: "imagens/qual-e-a-musica-4-autoria-alex-alves.png", autoria: "Alex Alves" },
-  { titulo: "Qual e a Musica 4 Verso", imagem: "imagens/qual-e-a-musica-4-verso-autoria-alex-alves.png", autoria: "Alex Alves" }
+  { titulo: "Qual e a Musica 4", imagem: "imagens/qual-e-a-musica-4-autoria-alex-alves.png", autoria: "Alex Alves", verso: "imagens/qual-e-a-musica-4-verso-autoria-alex-alves.png"},
+  { titulo: "Ensolarado", imagem: "imagens/ensolarado.jpg", verso: "imagens/ensolarado-verso.jpg" },
+  { titulo: "Flores3", imagem: "imagens/flores3.png" },
+  { titulo: "Menina", imagem: "imagens/menina.jpg", verso: "imagens/menina-verso.jpg" },
+  { titulo: "Paisagem", imagem: "imagens/paisagem.jpg" },
+  { titulo: "Ursinho", imagem: "imagens/ursinho.jpg" },
+  { titulo: "Vaca Abduzida", imagem: "imagens/vaca-abduzida.jpg" },
+  { titulo: "Você e Linda o", imagem: "imagens/voce-e-linda-o-autoria-lavinia.jpg", autoria: "Lavinia" }
 ];
