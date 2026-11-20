@@ -475,6 +475,7 @@ h1 em, h2 em, h3 em { color: var(--coral); font-family: var(--serif); font-weigh
   --shadow-y:3%;
   --shadow-blur:clamp(6px, 4cqw, 14px);
   --shadow-flip-scale:1;
+  --shadow-flip-x-scale:1;
   --shadow-flip-y:0%;
   --shadow-flip-blur:0px;
   width:100%;
@@ -485,7 +486,8 @@ h1 em, h2 em, h3 em { color: var(--coral); font-family: var(--serif); font-weigh
   filter:brightness(0) blur(calc(var(--shadow-blur) + var(--shadow-flip-blur)));
   transform:
     translateY(calc(var(--shadow-y) + var(--shadow-flip-y)))
-    scale(calc(var(--shadow-scale) * var(--shadow-flip-scale)));
+    scale(calc(var(--shadow-scale) * var(--shadow-flip-scale)))
+    scaleX(var(--shadow-flip-x-scale));
   transform-origin:50% 50%;
 }
 .product-image-wrap.has-verso .marker-3d-scene {
