@@ -120,5 +120,5 @@ window.MARCADORES = [
   { titulo: "Yin Yang", imagem: "imagens/yin-yang-autoria-thalita-karolaine.png", autoria: "Thalita Karolaine" },
   { titulo: "Yin Yang Complemento", imagem: "imagens/yin-yang-complemento-autoria-thalita-karolaine.png", autoria: "Thalita Karolaine" },
   { titulo: "Yokai Watch Punk Tactics", imagem: "imagens/yokai-watch-punk-tactics-autoria-max.png", verso: "imagens/yokai-watch-punk-tactics-verso-autoria-max.png", autoria: "Max" },
-  { titulo: "Nuvenzinha Brilhante", imagem: "imagens/nuvenzinha-brilhante-autoria-rihanna-kathleen.png", autoria: "Rihanna Kathleen" }
+  { titulo: "Nuvenzinha Brilhante", imagem: "imagens/nuvenzinha-brilhante-autoria-rihanna-kathleen.png", autoria: "Rihanna Kathleen", verso: "imagens/nuvenzinha-brilhante-verso-autoria-rihanna-kathleen.png"}
 ];
